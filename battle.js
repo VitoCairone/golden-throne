@@ -1,26 +1,26 @@
 function getDamage(enac, targ) {
 	var dam = 1;
-	var variance = 0;
+	// var variance = 0;
+  var blockRatio = 0;
 	if (enac.Cmd === "Magic") {
-		dam = enac.MG + Math.random() * 6 - targ.MG;
-		variance = (enac.MG + targ.MG) * 0.05;
-		dam += variance * (Math.random() * 2 - 1);
+		dam = enac.MG - targ.MG;
+		// variance = (enac.MG + targ.MG) * 0.05;
+		// dam += variance * (Math.random() * 2 - 1);
 
 		if (targ.Cmd === "Ward") {
-			blockRatio = 0.5 + Math.random() * 0.2;
+			blockRatio = 0.5; // + Math.random() * 0.2;
 			dam *= (1 - blockRatio);
 		}
 	} else {
-		dam = 10 + enac.AT - targ.DF;
-		variance = (enac.AT + targ.DF) * 0.05;
-		dam += variance * (Math.random() * 2 - 1);
+		dam = enac.AT - targ.DF;
+		// variance = (enac.AT + targ.DF) * 0.05;
+		// dam += variance * (Math.random() * 2 - 1);
 
-		var blockRatio = 0;
 		if (targ.Cmd === "Defend") {
-			blockRatio = 0.5 + Math.random() * 0.2;
+			blockRatio = 0.5; // + Math.random() * 0.2;
 			if (enac.Cmd === "Superstrike") {
 				// Superstrike ignores 50-70% Defend effect
-				blockRatio *= (0.3 + Math.random() * 0.2);
+				blockRatio = 0.25; // (0.3 + Math.random() * 0.2);
 			}
 		}
 		dam *= (1 - blockRatio);
@@ -83,6 +83,7 @@ function levelUp(fi, times = 1, stats = "auto") {
   } else {
     console.log("NYI - non-auto stat level up");
   }
+  fi.base.HP = fi.base.MHP * 10;
   battleReset(fi);
 }
 
@@ -260,8 +261,7 @@ function report(code, opts) {
 			dam = opts.dam;
 			var atkName = struck.opp.Cmd;
 			if (opts.counterResult === "hit") atkName === "Counter"
-			else if (atkName === "Magic") atkName = struck.opp.Magic;
-			else if (atkName === "Skill") atkName = struck.opp.Skill;
+			else if (atkName === "Magic" || atkName === "Skill") atkName += ": " + struck.opp[atkName];
 
 			if (opts.counterResult === "pierce")
 				console.log(`${struck.opp.name} broke through ${struck.name}'s Counter!`);
@@ -323,11 +323,24 @@ function resolveBatRound(enac, targ) {
 	return {winner: null, result: null}
 }
 
+function smartAct(fi) {
+  const atkDam = Math.max(fi.AT - fi.opp.DF, 1);
+  const magDam = Math.max(fi.MG - fi.opp.MG, 1);
+  // console.log(atkDam, magDam);
+  // always use AT / MG if it's better blocked than the other unblocked
+  if (magDam / 2 > atkDam) return "Magic";
+  if (atkDam / 2 > magDam) return pickItem(["Attack", "Attack", "Superstrike"]);
+  // otherwise select based on proportional damage roll
+  const tot = atkDam + magDam;
+  if (Math.random() > magDam / tot) return pickItem(["Attack", "Superstrike"]);
+  return "Magic";
+}
+
 function setCommand(player, mode) {
   var opts;
   if (mode === "act") {
-    opts = ["Attack", "Superstrike", "Magic"];
-    if (!player.isSkillOn) opts = opts.concat(["Skill"]);
+    if (!player.isSkillOn && Math.random() < 0.3) opts = ["Skill"];
+    opts = [smartAct(player)];
   } else {
     opts = ["Defend", "Counter", "Ward"];
   }
@@ -344,6 +357,7 @@ function battleReset(fi) {
 
 const OUT_LEN = 78;
 function banner() { return "=".repeat(OUT_LEN); }
+function dashLine() { return "-".repeat(OUT_LEN); }
 function center(text, char = " ") {
   const rptLen = (OUT_LEN - text.length - 2)/2;
   return char.repeat(rptLen) + " " + text + " " + char.repeat(rptLen);
@@ -352,10 +366,21 @@ function center(text, char = " ") {
 function fullBattle(p1, p2) {
   console.log(banner());
   console.log(center(`${p1.name} vs ${p2.name}!`))
+  console.log(dashLine());
+  [p1, p2].forEach(p => {
+    console.log((p.name + ": ").padEnd(10, " ") +  ['AT', 'DF', 'MG', 'SP',].map(stat => stat + ": " + p[stat]).join(" ")
+    + ` HP: ${p.HP}/${p.base.HP}`);
+  });
+    
+  console.log(dashLine());
   console.log(center("Battle Start!"))
   console.log(banner());
-	battleReset(p1);
+	
+  battleReset(p1);
 	battleReset(p2);
+  p1.opp = p2;
+  p2.opp = p1;
+
 	var enac, targ;
 	var p1Spd = Math.random() * p1.SP;
 	var p2Spd = Math.random() * p2.SP;
@@ -383,4 +408,9 @@ const fi2 = makeFi(
 	{cls: pickItem(startClassList.filter(cls => cls != fi1.cls))}
 );
 
+// function main() {
+levelUp(fi1, 10);
+levelUp(fi2, 10);
+
 fullBattle(fi1, fi2);
+// }();
