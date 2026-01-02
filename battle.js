@@ -35,8 +35,8 @@ function hitRate(enac, targ) {
 }
 
 function doesAGoFirst(a, b) {
-	const aSP = a.SP * (0.9 + Math.random() * 0.2);
-	const bSP = b.SP * (0.9 + Math.random() * 0.2);
+	const aSP = a.SP * (0.85 + Math.random() * 0.3);
+	const bSP = b.SP * (0.85 + Math.random() * 0.3);
 	if (aSP === bSP) return (Math.random() >= 0.5);
 	return aSP > bSP;
 }
@@ -67,6 +67,24 @@ const startClasses = {
 		field: "Steal opponent posessions when passing by"
 	},
 };
+
+function levelUp(fi, times = 1, stats = "auto") {
+  const cls = allClasses[fi.cls]
+  const clsStats = Object.keys(cls.level);
+  // TODO: reporting
+  clsStats.forEach(stat => {
+    fi.base[stat] += cls.level[stat] * times;
+  });
+  if (stats === "auto") {
+    for (var i = 0; i < (2 * times); i++) {
+      var randStat = pickItem(allFiveStats);
+      fi.base[randStat] += 1;
+    }
+  } else {
+    console.log("NYI - non-auto stat level up");
+  }
+  battleReset(fi);
+}
 
 const startClassList = Object.keys(startClasses);
 startClassList.forEach(cls => {
@@ -169,6 +187,8 @@ function randomClass() {
 	return pickItem(["mage", "thief", "warrior"]);
 }
 
+const allFiveStats = ["AT", "DF", "SP", "MG", "MHP"]
+// TODO: consider removing allSix and always handle HP separately
 const allSixStats = ["AT", "DF", "HP", "SP", "MG", "MHP"];
 
 function capStart(str) {
