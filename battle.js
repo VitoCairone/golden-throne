@@ -392,8 +392,10 @@ function fullBattle(p1, p2) {
 		targ = p1;
 	}
 
-	var result = {};
+  let turn = 0;
+	let result = {};
 	while (!result.winner) {
+    turn++;
 		setCommand(enac, "act");
 		setCommand(targ, "react");
 		result = resolveBatRound(enac, targ);
@@ -401,6 +403,9 @@ function fullBattle(p1, p2) {
 		targ = enac;
 		enac = oldTarg;
 	}
+
+  result.turns = turn;
+  return result;
 }
 
 const fi1 = makeFi();
@@ -408,9 +413,12 @@ const fi2 = makeFi(
 	{cls: pickItem(startClassList.filter(cls => cls != fi1.cls))}
 );
 
-// function main() {
+function classWinCompare(level = 50, matches = 100) {
+  var outcomes = [];
+  for (var m = 0; m < matches; m++) { ; }
+}
+
 levelUp(fi1, 10);
 levelUp(fi2, 10);
 
 fullBattle(fi1, fi2);
-// }();
