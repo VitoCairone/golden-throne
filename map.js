@@ -35,6 +35,8 @@ const islandCharArr = asciiMapToMapCharArr(ISLAND_MAP);
 console.log("IN: ")
 console.log(islandCharArr.map(l => l.join("")));
 
+const nodesByChar = {}
+
 function makeNode(i, j, ch, grid) {
   if (grid[i][j]) return;
   grid[i][j] =  {
@@ -47,8 +49,13 @@ function makeNode(i, j, ch, grid) {
     n: null,
     s: null,
     w: null
-  }
-  return grid[i][j];
+  };
+  const rv = grid[i][j];
+
+  nodesByChar[ch] ||= [];
+  nodesByChar[ch].push(rv);
+
+  return rv;
 }
 
 function addEdge(i, j, ch, mapCharArr, grid) {
@@ -165,3 +172,41 @@ const grid = mapCharArrToGrid(islandCharArr);
 console.log("OUT: ")
 printGrid(grid);
 
+const startNode = nodesByChar['x'][0];
+
+function roll(n) {
+  return 1 + Math.floor(Math.random() * n);
+}
+
+function nodesAtDist(here, distRem, prior) {
+  // console.log("HERE=");
+  // console.log(here);
+  const nexts = ['n','e','w','s'].map(dir => here[dir]).filter(node => node && node !== prior);
+  if (distRem <= 1) return nexts;
+  return nexts.map(next => nodesAtDist(next, distRem - 1, here)).flat();
+}
+
+function pickItem(x) {
+  return x[Math.floor(x.length * Math.random())];
+}
+
+function locStr(loc) {
+  return loc ? `${loc.i},${loc.j}->${loc.ch}` : "null";
+}
+
+let loc = startNode;
+// console.log("StartNode");
+// console.log(startNode);
+for (var r = 0; r < 10; r++) {
+  let rollVal = roll(6);
+  console.log(`Rolled a ${rollVal}`);
+  dests = nodesAtDist(startNode, 3, null);
+  // console.log("DESTS");
+  // console.log(dests);
+  oldLoc = loc;
+  let newLoc = pickItem(dests);
+  // console.log("newLoc = ");
+  // console.log(newLoc);
+  loc = newLoc;
+  console.log(`Moved from ${locStr(oldLoc)} to ${locStr(loc)}.`);
+}
