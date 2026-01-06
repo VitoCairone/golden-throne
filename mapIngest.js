@@ -31,10 +31,6 @@ function asciiMapToMapCharArr(ascii) {
   return fullGrid.map(l => l.filter((c, i) => { return !(i % 2) }));
 }
 
-const islandCharArr = asciiMapToMapCharArr(ISLAND_MAP);
-console.log("IN: ")
-console.log(islandCharArr.map(l => l.join("")));
-
 const nodesByChar = {}
 
 function makeNode(i, j, ch, grid) {
@@ -167,23 +163,27 @@ function printGrid(grid) {
   }
 }
 
-const grid = mapCharArrToGrid(islandCharArr);
-
-console.log("OUT: ")
-printGrid(grid);
-
-const startNode = nodesByChar['x'][0];
-
 function roll(n) {
   return 1 + Math.floor(Math.random() * n);
 }
 
-function nodesAtDist(here, distRem, prior) {
-  // console.log("HERE=");
-  // console.log(here);
+function nodesAtDist(here, distRem, prior = null) {
+  if (!distRem) return [here]; // only for starting at 0
+  console.log("Here =")
+  console.log(here);
   const nexts = ['n','e','w','s'].map(dir => here[dir]).filter(node => node && node !== prior);
-  if (distRem <= 1) return nexts;
-  return nexts.map(next => nodesAtDist(next, distRem - 1, here)).flat();
+  if (distRem == 1) {
+    console.log("Returning for dist 1:")
+    console.log(nexts);
+    return nexts; // recursion stops here
+  } else {
+    console.log("non-return nexts:");
+    console.log(nexts);
+  }
+  const recurseTo = nexts.map(next => nodesAtDist(next, distRem - 1, here).flat()).flat();
+  console.log("recurseTo distRem " + distRem);
+  console.log(recurseTo);
+  return recurseTo;
 }
 
 function pickItem(x) {
@@ -194,19 +194,30 @@ function locStr(loc) {
   return loc ? `${loc.i},${loc.j}->${loc.ch}` : "null";
 }
 
-let loc = startNode;
-// console.log("StartNode");
-// console.log(startNode);
-for (var r = 0; r < 10; r++) {
-  let rollVal = roll(6);
-  console.log(`Rolled a ${rollVal}`);
-  dests = nodesAtDist(startNode, 3, null);
-  // console.log("DESTS");
-  // console.log(dests);
-  oldLoc = loc;
-  let newLoc = pickItem(dests);
-  // console.log("newLoc = ");
-  // console.log(newLoc);
-  loc = newLoc;
-  console.log(`Moved from ${locStr(oldLoc)} to ${locStr(loc)}.`);
+function asciiMapToGrid(asciiMap) {
+  return mapCharArrToGrid(asciiMapToMapCharArr(asciiMap));
 }
+
+function testMap() {
+  const islandCharArr = asciiMapToMapCharArr(ISLAND_MAP);
+  console.log("IN: ")
+  console.log(islandCharArr.map(l => l.join("")));
+
+  const grid = mapCharArrToGrid(islandCharArr);
+  let loc = nodesByChar['x'][0];
+
+  for (var r = 0; r < 10; r++) {
+    let rollVal = roll(6);
+    console.log(`Rolled a ${rollVal}`);
+    dests = nodesAtDist(loc, rollVal);
+    let oldLoc = loc;
+    let newLoc = pickItem(dests);
+    loc = newLoc;
+    console.log(`Moved from ${locStr(oldLoc)} to ${locStr(loc)}.`);
+  }
+
+  console.log("OUT: ")
+  printGrid(grid);
+}
+
+// testMap();
