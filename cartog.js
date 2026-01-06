@@ -1,6 +1,8 @@
 const grid = asciiMapToGrid(ISLAND_MAP);
 const [gridW, gridH] = [grid.length, grid[0].length];
 
+const tilePx = 30;
+
 const bodyEl = document.getElementsByTagName("body")[0];
 bodyEl.style.backgroundColor = "#0f0";
 for (var j = 0; j < gridH; j++) {
@@ -8,10 +10,10 @@ for (var j = 0; j < gridH; j++) {
     let ch = grid[i][j]?.ch || "b";
     let div = document.createElement("div");
     div.id = `grid-${i}-${j}`;
-    div.style.width = "30px";
-    div.style.height = "30px";
-    div.style.left = `${i * 30}px`;
-    div.style.top = `${j * 30}px`;
+    div.style.width = `${tilePx}px`;
+    div.style.height = `${tilePx}px`;
+    div.style.left = `${i * tilePx}px`;
+    div.style.top = `${j * tilePx}px`;
     div.style.backgroundColor = `#0f0`;
     console.log("ch = " + ch);
     switch (ch) {
@@ -74,5 +76,48 @@ for (var j = 0; j < gridH; j++) {
   }
 }
 
-console.log("Ran cartog")
+const startNode = nodesByChar['x'][0];
+const colors = [
+  "red", "green", "blue", "yellow", "orange", "purple"
+]
+let freeColors = [...colors];
+const [p0, p1, p2, p3] = [
+  {idx: 0},
+  {idx: 1},
+  {idx: 2},
+  {idx: 3}
+];
+
+[p0, p1, p2, p3].forEach(p => {
+  p.loc = startNode;
+  p.color = pickItem(freeColors);
+  console.log("freeColors");
+  console.log(typeof freeColors);
+  console.log(freeColors);
+  freeColors = freeColors.filter(c => c !== p.color);
+  var div = document.createElement("div");
+
+  // div.style.backgroundColor = p.color;
+  // div.style.width = "15px";
+  // div.style.height = "15px";
+
+  div.style.width = "0px";
+  div.style.height = "0px";
+  div.style.borderLeft = `20px solid transparent`;
+  div.style.borderRight = `20px solid transparent`;
+  div.style.borderBottom = `20px solid ${p.color}`;
+  div.style.position = "absolute";
+  div.style.zIndex = 104 - p.idx;
+  p.el = div;
+
+  movePlayerPiece(p);
+  bodyEl.appendChild(div);
+});
+
+function movePlayerPiece(p) {
+  p.el.style.left = `${Math.round(tilePx * p.loc.i + (p.idx - 2) * (tilePx / 3), 0)}px`;
+  p.el.style.top = `${tilePx * p.loc.j + 4}px`;
+}
+
+console.log("Ran cartog");
 console.log([gridW, gridH]);
