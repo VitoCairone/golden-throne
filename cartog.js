@@ -81,6 +81,8 @@ for (var j = 0; j < gridH; j++) {
     div.style.position = "absolute";
     div.className = `grid ch-${ch}`;
 
+    if (ch !== "b") grid[i][j].el = div;
+
     // if (ch !== "b" && !CONNECTORS.has(ch)) {
     //   div.innerHTML = ['n','e','w','s'].map(dir => grid[i][j][dir] ? dir : "_").join("");
     // }
@@ -104,9 +106,6 @@ const [p0, p1, p2, p3] = [
 [p0, p1, p2, p3].forEach(p => {
   p.loc = startNode;
   p.color = pickItem(freeColors);
-  console.log("freeColors");
-  console.log(typeof freeColors);
-  console.log(freeColors);
   freeColors = freeColors.filter(c => c !== p.color);
   var div = document.createElement("div");
 
@@ -134,3 +133,7 @@ function movePlayerPiece(p) {
 
 console.log("Ran cartog");
 console.log([gridW, gridH]);
+
+function showDestination(node) { node.el.border = "5px solid white"; }
+
+function unshowDestination(node) { node.el.border = "none"; }

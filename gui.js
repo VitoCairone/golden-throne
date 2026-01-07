@@ -15,7 +15,9 @@ controlsEl.appendChild(rollBtn);
 rollBtn.onclick = function() {
   const r = roll(6);
   console.log("Rolled " + r);
-  movePlayer(p0, r);
+  setDist(p0, r);
+  const dest = pickItem(p0.dests);
+  movePlayer(p0, dest);
 }
 
 bodyEl.appendChild(controlsEl);
