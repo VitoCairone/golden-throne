@@ -16,8 +16,16 @@ rollBtn.onclick = function() {
   const r = roll(6);
   console.log("Rolled " + r);
   setDist(p0, r);
-  const dest = pickItem(p0.dests);
-  movePlayer(p0, dest);
+  // const dest = pickItem(p0.dests);
+  // movePlayer(p0, dest);
+}
+
+let actPlayer = p0;
+
+function clickNode(node) {
+  if (actPlayer.dests.includes(node)) {
+    movePlayer(actPlayer, node);
+  }
 }
 
 bodyEl.appendChild(controlsEl);

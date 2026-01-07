@@ -83,9 +83,10 @@ for (var j = 0; j < gridH; j++) {
 
     if (ch !== "b") grid[i][j].el = div;
 
-    // if (ch !== "b" && !CONNECTORS.has(ch)) {
-    //   div.innerHTML = ['n','e','w','s'].map(dir => grid[i][j][dir] ? dir : "_").join("");
-    // }
+    if (grid[i][j]?.kind === "node") {
+      const node = grid[i][j];
+      div.onclick = function() { clickNode(node); }
+    }
 
     fieldEl.appendChild(div);
   }
@@ -134,6 +135,16 @@ function movePlayerPiece(p) {
 console.log("Ran cartog");
 console.log([gridW, gridH]);
 
-function showDestination(node) { node.el.border = "5px solid white"; }
+function showDestination(node) { 
+  // console.log("show");
+  // console.log(node);
+  node.el.style.border = "5px solid white"; 
+  node.el.style.height = `${tilePx - 10}px`; 
+  node.el.style.width = `${tilePx - 10}px`; 
+}
 
-function unshowDestination(node) { node.el.border = "none"; }
+function unshowDestination(node) { 
+  node.el.style.border = "none"; 
+  node.el.style.height = `${tilePx}px`; 
+  node.el.style.width = `${tilePx}px`; 
+}
