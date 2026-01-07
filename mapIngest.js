@@ -84,8 +84,8 @@ function addEdge(i, j, ch, mapCharArr, grid) {
 
       nonPrimaries.length = 0;
       // remember mapCharrArr index order is backwards
-      while (mapCharArr[j][i + 1 + nonPrimaries.length] === ch)
-        nonPrimaries.push([i + 1 + nonPrimaries.length, j]);
+      while (mapCharArr[j + 1 + nonPrimaries.length][i] === ch)
+        nonPrimaries.push([i, j + 1 + nonPrimaries.length]);
 
       southNode = grid[i][j + 1 + nonPrimaries.length];
 
@@ -108,7 +108,7 @@ function addEdge(i, j, ch, mapCharArr, grid) {
   }
   nonPrimaries.forEach(coord => {
     const [cI, cJ] = coord;
-    grid[i][j] = {
+    grid[cI][cJ] = {
       kind: 'edge',
       zn: 0,
       ch: ch,
@@ -128,7 +128,7 @@ function mapCharArrToGrid(mapCharArr) {
   const grid = [];
   const width = mapCharArr[0].length;
   const height = mapCharArr.length;
-  const connectors = new Set(["-", "<", ">", "|"]);
+  const connectors = new Set(["-", "<", ">", "|", "v", "^"]);
   let ch;
 
   // set all nodes first

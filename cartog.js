@@ -5,6 +5,14 @@ const tilePx = 30;
 
 const bodyEl = document.getElementsByTagName("body")[0];
 bodyEl.style.backgroundColor = "#0f0";
+bodyEl.style.display = "flex";
+
+const fieldEl = document.createElement("div");
+fieldEl.style.width = gridW * tilePx;
+fieldEl.style.height = gridH * tilePx;
+// fieldEl.style.display = "inline-block";
+bodyEl.appendChild(fieldEl);
+
 for (var j = 0; j < gridH; j++) {
   for (var i = 0; i < gridW; i++) {
     let ch = grid[i][j]?.ch || "b";
@@ -15,7 +23,7 @@ for (var j = 0; j < gridH; j++) {
     div.style.left = `${i * tilePx}px`;
     div.style.top = `${j * tilePx}px`;
     div.style.backgroundColor = `#0f0`;
-    console.log("ch = " + ch);
+    // console.log("ch = " + ch);
     switch (ch) {
       case "-":
       case "<":
@@ -72,7 +80,12 @@ for (var j = 0; j < gridH; j++) {
     }
     div.style.position = "absolute";
     div.className = `grid ch-${ch}`;
-    bodyEl.appendChild(div);
+
+    // if (ch !== "b" && !CONNECTORS.has(ch)) {
+    //   div.innerHTML = ['n','e','w','s'].map(dir => grid[i][j][dir] ? dir : "_").join("");
+    // }
+
+    fieldEl.appendChild(div);
   }
 }
 
@@ -111,7 +124,7 @@ const [p0, p1, p2, p3] = [
   p.el = div;
 
   movePlayerPiece(p);
-  bodyEl.appendChild(div);
+  fieldEl.appendChild(div);
 });
 
 function movePlayerPiece(p) {
