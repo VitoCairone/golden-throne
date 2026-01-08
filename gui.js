@@ -12,15 +12,13 @@ rollBtn.style.margin = "5px 5px 5px 5px";
 rollBtn.innerHTML = "Roll";
 controlsEl.appendChild(rollBtn);
 
+let actPlayer = p0;
+
 rollBtn.onclick = function() {
   const r = roll(6);
   console.log("Rolled " + r);
-  setDist(p0, r);
-  // const dest = pickItem(p0.dests);
-  // movePlayer(p0, dest);
+  setDist(actPlayer, r);
 }
-
-let actPlayer = p0;
 
 function clickNode(node) {
   if (actPlayer.dests.includes(node)) {

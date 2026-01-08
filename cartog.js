@@ -97,12 +97,17 @@ const colors = [
   "red", "green", "blue", "yellow", "orange", "purple"
 ]
 let freeColors = [...colors];
-const [p0, p1, p2, p3] = [
-  {idx: 0},
-  {idx: 1},
-  {idx: 2},
-  {idx: 3}
-];
+
+function makePlayer(idx) {
+  return {
+    idx: 0,
+    coins: 0,
+    items: [],
+    fieldMagics: []
+  }
+}
+
+const [p0, p1, p2, p3] = [0, 1, 2, 3].map(idx => makePlayer(idx));
 
 [p0, p1, p2, p3].forEach(p => {
   p.loc = startNode;
