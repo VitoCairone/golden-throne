@@ -1,0 +1,4 @@
+* ensure turn phases progress strictly in order and once each
+* display player character stats & info on page
+* print history via HTML
+* alternate player & automated CPU turns
