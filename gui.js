@@ -1,29 +1,50 @@
-const controlsEl = document.createElement("div");
+const controlsEl = document.getElementById("controls");
 controlsEl.style.border = "3px solid black";
 controlsEl.style.width = "100px";
 controlsEl.style.height = "600px";
 // controlsEl.style.display = "inline-block";
 controlsEl.style.backgroundColor = "violet";
 
-const rollBtn = document.createElement("button");
+const rollBtn = document.getElementById("roll-btn");
 rollBtn.style.width = "90%";
 rollBtn.style.height = "10%";
 rollBtn.style.margin = "5px 5px 5px 5px";
 rollBtn.innerHTML = "Roll";
-controlsEl.appendChild(rollBtn);
+// controlsEl.appendChild(rollBtn);
 
 let actPlayer = p0;
 
-rollBtn.onclick = function() {
+rollBtn.onclick = function() { clickRoll(); }
+
+function clickRoll() {
   const r = roll(6);
-  console.log("Rolled " + r);
+  console.log(`${actPlayer.name} rolled a ${r}.`);
   setDist(actPlayer, r);
+  advancePhase();
 }
 
 function clickNode(node) {
   if (actPlayer.dests.includes(node)) {
     movePlayer(actPlayer, node);
+    advancePhase();
   }
 }
 
-bodyEl.appendChild(controlsEl);
+function enableRoll() {
+  rollBtn.disabled = false;
+}
+
+function disableRoll() {
+  rollBtn.disabled = true;
+}
+
+function showPlayerInfo() {
+  document.getElementById("player-name").innterHTML = p0.name;
+  document.getElementById("HP").innerHTML = `HP: ${p0.HP}/${p0.MHP * 10}`;
+  ["AT", "DF", "MG", "SP"].forEach(stat => {
+    document.getElementById(stat).innerHTML = `${stat}: ${parseInt(p0[stat])}`;
+  })
+}
+
+// bodyEl.appendChild(controlsEl);
+showPlayerInfo();

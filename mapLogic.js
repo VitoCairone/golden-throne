@@ -1,5 +1,3 @@
-let actPhase = null;
-
 WEAPON_AT_BY_NAME = {
   'Stick': 2,
   'Dagger': 10,
@@ -56,7 +54,7 @@ function startSpinner(kind, p) {
     break;
     case "Shield": choices = ["Wood Shield", "Wood Shield", "Sturdy Shield", "Sturdy Shield", "Makeshift Shield", "Iron Shield"]
     break;
-    case "Coin": choices = [10, 25, 50, 50, 100, 200];
+    case "Gold": choices = [10, 25, 50, 50, 100, 200];
     break;
     default:
       console.log("ERR: Unknown kind to startSpinner");
@@ -66,14 +64,49 @@ function startSpinner(kind, p) {
 
   const got = pickItem(choices);
   switch (kind) {
-    case "Coin": p.coins += got; break;
+    case "Gold": p.gold += got; break;
     case "Magic": p.fieldMagics.push(got); break;
     case "Item": p.items.push(got); break;
     case "Weapon": setWeapon(p, got); break;
     case "Shield": setShield(p, got); break;
   }
 
-  console.log(`Player got ${got}${kind === "Coins" ? " coins" : ""} from ${kind} space.`);
+  console.log(`${p.name} got ${got}${kind === "Gold" ? " gold" : ""} from ${kind} space.`);
+}
+
+let actPhaseIdx = 0;
+const phaseNames = [
+  'Field Action', // currently this is just Roll but will have other options
+  'Choose Destination',
+  // 'Arrived',
+  'Next Player',
+]
+
+function advancePhase() {
+  // phase names should suggest the player input waited on.
+  actPhaseIdx = (actPhaseIdx + 1) % 3;
+  console.log(`--- ${actPlayer.name} (${actPlayer.idx}) phase ${actPhaseIdx} ---`);
+  switch (actPhaseIdx) {
+    case 0:
+      if (actPlayer.isHuman) {
+        enableRoll();
+      } else {
+        clickRoll();
+      }
+      break;
+    case 1: 
+      if (actPlayer.isHuman) {
+        disableRoll();
+      } else {
+        // TODO: intentful movement for CPU players
+        clickNode(pickItem(actPlayer.dests));
+      }
+      break;
+    case 2:
+      actPlayer = actPlayer.nextPlayer;
+      console.log(`${actPlayer.name}'s turn!`)
+      advancePhase();
+  }
 }
 
 function startCombat(p) {
@@ -81,16 +114,28 @@ function startCombat(p) {
   return;
 }
 
+function endGame(first) {
+  console.log(`${first.name} arrived first! ${first.name} gained 200 Bonus gold!)`);
+  // ignore exact ties for now
+  let winner = p0;
+  [p1, p2, p3].forEach(p => {
+    if (p.gold > winner.gold) winner = p;
+  });
+  console.log(`${winner.name} is the winner!`);
+}
+
 function runArrival(p) {
   switch (p.loc.ch) {
-    case "C":
-      // TODO: random encounters
-      return startCombat(p);
+    case "C": return startCombat(p); // TODO: random encounters
     case "I": return startSpinner("Item", p);
     case "M": return startSpinner("Magic", p);
-    case "$": return startSpinner("Coin", p);
+    case "$": return startSpinner("Gold", p);
     case "W": return startSpinner("Weapon", p);
     case "S": return startSpinner("Shield", p);
+    case "X": return endGame(p);
+    default:
+      console.log("ERR: unhandled arrival node ch");
+      console.log(p.loc.ch);
   }
 }
 
@@ -98,7 +143,6 @@ function setDist(p, dist) {
   p.dist = dist;
   p.dests = nodesAtDist(p.loc, dist);
   p.dests.forEach(d => showDestination(d));
-  actPhase = "Choose Destination";
 }
 
 function movePlayer(p, dest) {
@@ -106,6 +150,5 @@ function movePlayer(p, dest) {
   p.dests.forEach(d => unshowDestination(d));
   movePlayerPiece(p);
   p.dests.length = 0;
-  actPhase = "Arrival"
   runArrival(p);
 }

@@ -7,11 +7,11 @@ const bodyEl = document.getElementsByTagName("body")[0];
 bodyEl.style.backgroundColor = "#0f0";
 bodyEl.style.display = "flex";
 
-const fieldEl = document.createElement("div");
+const fieldEl = document.getElementById("field");
 fieldEl.style.width = gridW * tilePx;
 fieldEl.style.height = gridH * tilePx;
 // fieldEl.style.display = "inline-block";
-bodyEl.appendChild(fieldEl);
+// bodyEl.appendChild(fieldEl);
 
 for (var j = 0; j < gridH; j++) {
   for (var i = 0; i < gridW; i++) {
@@ -98,27 +98,34 @@ const colors = [
 ]
 let freeColors = [...colors];
 
-function makePlayer(idx) {
-  return {
-    idx: 0,
-    coins: 0,
-    items: [],
-    fieldMagics: []
-  }
+function toUpper(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-const [p0, p1, p2, p3] = [0, 1, 2, 3].map(idx => makePlayer(idx));
-
-[p0, p1, p2, p3].forEach(p => {
-  p.loc = startNode;
+function makePlayer(idx) {
+  const p = {
+    idx: idx,
+    gold: 0,
+    items: [],
+    fieldMagics: [],
+    gold: 0,
+    loc: startNode,
+    AT: 5,
+    DF: 5,
+    MG: 5,
+    SP: 5,
+    HP: 50,
+    MHP: 5
+  };
   p.color = pickItem(freeColors);
   freeColors = freeColors.filter(c => c !== p.color);
-  var div = document.createElement("div");
+  p.name = toUpper(p.color);
+  p.isHuman = (p.idx === 0);
 
+  const div = document.createElement("div");
   // div.style.backgroundColor = p.color;
   // div.style.width = "15px";
   // div.style.height = "15px";
-
   div.style.width = "0px";
   div.style.height = "0px";
   div.style.borderLeft = `20px solid transparent`;
@@ -130,7 +137,14 @@ const [p0, p1, p2, p3] = [0, 1, 2, 3].map(idx => makePlayer(idx));
 
   movePlayerPiece(p);
   fieldEl.appendChild(div);
-});
+  return p;
+}
+
+const [p0, p1, p2, p3] = [0, 1, 2, 3].map(idx => makePlayer(idx));
+p0.nextPlayer = p1;
+p1.nextPlayer = p2;
+p2.nextPlayer = p3;
+p3.nextPlayer = p0;
 
 function movePlayerPiece(p) {
   p.el.style.left = `${Math.round(tilePx * p.loc.i + (p.idx - 2) * (tilePx / 3), 0)}px`;
