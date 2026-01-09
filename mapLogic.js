@@ -15,16 +15,16 @@ SHIELD_DF_BY_NAME = {
 function weaponAT(x) {
   let name = x?.weapon ? x.weapon : x;
   if (name in WEAPON_AT_BY_NAME) return WEAPON_AT_BY_NAME[name];
-  console.log("ERR: Invalid arg to weaponAT");
-  console.log(x);
+  report("ERR: Invalid arg to weaponAT");
+  report(x);
   return 0;
 }
 
 function shieldDF(x) {
   let name = x?.shield ? x.shield : x;
   if (name in SHIELD_DF_BY_NAME) return SHIELD_DF_BY_NAME[name];
-  console.log("ERR: Invalid arg to shieldDF");
-  console.log(x);
+  report("ERR: Invalid arg to shieldDF");
+  report(x);
   return 0;
 }
 
@@ -44,7 +44,7 @@ function setShield(p, shield) {
 
 function startSpinner(kind, p) {
   let choices;
-  // console.log(kind);
+  // report(kind);
   switch (kind) {
     case "Item": choices = ["1 Crystal", "2 Crystal", "5 Crystal", "2 Spinner", "Power Potion", "Manabrew"];
     break;
@@ -57,8 +57,8 @@ function startSpinner(kind, p) {
     case "Gold": choices = [10, 25, 50, 50, 100, 200];
     break;
     default:
-      console.log("ERR: Unknown kind to startSpinner");
-      console.log(kind);
+      report("ERR: Unknown kind to startSpinner");
+      report(kind);
       return;
   }
 
@@ -71,7 +71,7 @@ function startSpinner(kind, p) {
     case "Shield": setShield(p, got); break;
   }
 
-  console.log(`${p.name} got ${got}${kind === "Gold" ? " gold" : ""} from ${kind} space.`);
+  report(`${p.name} got ${got}${kind === "Gold" ? " gold" : ""} from ${kind} space.`);
 }
 
 let actPhaseIdx = 0;
@@ -85,7 +85,7 @@ const phaseNames = [
 function advancePhase() {
   // phase names should suggest the player input waited on.
   actPhaseIdx = (actPhaseIdx + 1) % 3;
-  console.log(`--- ${actPlayer.name} (${actPlayer.idx}) phase ${actPhaseIdx} ---`);
+  report(`--- ${actPlayer.name} (${actPlayer.idx}) phase ${actPhaseIdx} ---`);
   switch (actPhaseIdx) {
     case 0:
       if (actPlayer.isHuman) {
@@ -104,24 +104,24 @@ function advancePhase() {
       break;
     case 2:
       actPlayer = actPlayer.nextPlayer;
-      console.log(`${actPlayer.name}'s turn!`)
+      report(`${actPlayer.name}'s turn!`)
       advancePhase();
   }
 }
 
 function startCombat(p) {
-  console.log("Combat from Map NYI");
+  report("Combat from Map NYI");
   return;
 }
 
 function endGame(first) {
-  console.log(`${first.name} arrived first! ${first.name} gained 200 Bonus gold!)`);
+  report(`${first.name} arrived first! ${first.name} gained 200 Bonus gold!)`);
   // ignore exact ties for now
   let winner = p0;
   [p1, p2, p3].forEach(p => {
     if (p.gold > winner.gold) winner = p;
   });
-  console.log(`${winner.name} is the winner!`);
+  report(`${winner.name} is the winner!`);
 }
 
 function runArrival(p) {
@@ -134,8 +134,8 @@ function runArrival(p) {
     case "S": return startSpinner("Shield", p);
     case "X": return endGame(p);
     default:
-      console.log("ERR: unhandled arrival node ch");
-      console.log(p.loc.ch);
+      report("ERR: unhandled arrival node ch");
+      report(p.loc.ch);
   }
 }
 

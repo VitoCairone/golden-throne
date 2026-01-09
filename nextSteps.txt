@@ -1,7 +1,8 @@
-* print history via HTML
+* integrate battle.js
 * add delays to CPU actions
 
 DONE
 * ensure turn phases progress strictly in order and once each -- 1/6
 * alternate player & automated CPU turns -- 1/6
 * display player character stats & info on page -- 1/6
+* print history via HTML -- 1/6

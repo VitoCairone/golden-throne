@@ -81,7 +81,7 @@ function levelUp(fi, times = 1, stats = "auto") {
       fi.base[randStat] += 1;
     }
   } else {
-    console.log("NYI - non-auto stat level up");
+    report("NYI - non-auto stat level up");
   }
   fi.base.HP = fi.base.MHP * 10;
   battleReset(fi);
@@ -197,7 +197,32 @@ function capStart(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-function makeFi(opts) {
+function setFighterClass(fi, cls) {
+	if (typeof fi === "number") fi = makePlayer(fi);
+	// TODO: enable non-start classes
+	cls = cls || randomClass();
+	if (!(cls in startClasses)) {
+		report("ERR: setFigherClass got invalid cls");
+		report(cls);
+		return;
+	}
+
+	["AT", "MG", "DF", "SP", "MHP"].forEach(stat => {
+		fi[stat] = startClasses[cls][stat];
+	});
+	fi.HP = fi.MHP * 10;
+	
+	fi.oppId = null;
+	fi.priorAtkCmd = null;
+	fi.priorDefCmd = null;
+	fi.Skill = "Charge";
+	fi.Magic = "Pickpocket";
+	fi.isSkillOn = false;
+
+	return fi;
+}
+
+function makeFi(opts, player = null) {
 	const def = startClasses;
 	const cls = opts?.cls || randomClass();
 	const newFi = {
@@ -230,10 +255,10 @@ function execSkill(enac, targ = null) {
 			const bestAT = Math.max(enac.AT, enac.base.AT);
 			enac.AT = Math.round(enac.AT + 0.5 * bestAT, 0);
 			enac.isSkillOn = true;
-			console.log(`${enac.name}'s AT rose to ${enac.AT}!`)
+			report(`${enac.name}'s AT rose to ${enac.AT}!`)
 			break;
 		default:
-			console.log("ERR: UNKNOWN SKILL");
+			report("ERR: UNKNOWN SKILL");
 	}
 	return {winner: null, result: null};
 }
@@ -243,18 +268,18 @@ function applyDamage(struck, dam) {
 	if (struck.HP <= 0) struck.HP = 0;
 }
 
-function report(code, opts) {
+function batReport(code, opts) {
 	var enac, targ, struck, dam;
 	switch (code) {
 		case "miss":
 			enac = opts.enac;
 			targ = opts.targ;
-			console.log(`${enac.name} misses ${targ.name} with ${enac.Cmd}.`);
+			report(`${enac.name} misses ${targ.name} with ${enac.Cmd}.`);
 			break;
 		case "counter-miss":
 			enac = opts.enac;
 			targ = opts.targ;
-			console.log(`${targ.name} misses ${enac.name} with Counter-Attack.`);
+			report(`${targ.name} misses ${enac.name} with Counter-Attack.`);
 			break;
 		case "struck":
 			struck = opts.struck;
@@ -264,17 +289,17 @@ function report(code, opts) {
 			else if (atkName === "Magic" || atkName === "Skill") atkName += ": " + struck.opp[atkName];
 
 			if (opts.counterResult === "pierce")
-				console.log(`${struck.opp.name} broke through ${struck.name}'s Counter!`);
-			console.log(`${struck.opp.name} strikes ${struck.name} with ${atkName} for ${dam} damage!`)
-			console.log(`${struck.name} has ${struck.HP} HP remaining!`)
+				report(`${struck.opp.name} broke through ${struck.name}'s Counter!`);
+			report(`${struck.opp.name} strikes ${struck.name} with ${atkName} for ${dam} damage!`)
+			report(`${struck.name} has ${struck.HP} HP remaining!`)
 			break;
 		case "KO":
-			console.log(`${opts.kod.name} is defeated!`);
+			report(`${opts.kod.name} is defeated!`);
 			break;
 		case "commands":
 			enac = opts.enac;
 			targ = opts.targ;
-			console.log(`${enac.name} used ${enac.Cmd}. ${targ.name} used ${targ.Cmd}.`);
+			report(`${enac.name} used ${enac.Cmd}. ${targ.name} used ${targ.Cmd}.`);
 	}
 }
 
@@ -282,7 +307,7 @@ function resolveBatRound(enac, targ) {
 	if (targ.Cmd === "Give Up")
 		return {winner: enac, result: "forfeit"};
 
-	report("commands", {enac, targ});
+	batReport("commands", {enac, targ});
 
 	if (enac.Cmd === "Skill")
 		return execSkill(enac, targ);
@@ -300,24 +325,24 @@ function resolveBatRound(enac, targ) {
 			}
 		}
 		if (counterResult === "miss") {
-			report("counter-miss", {enac, targ});
+			batReport("counter-miss", {enac, targ});
 			return {winner: null, result: null};
 		}
 		const struck = counterResult === "hit" ? enac : targ;
 		struck.opp = struck === enac ? targ : enac;
 		applyDamage(struck, dam);
-		report("struck", {struck, dam, counterResult});
+		batReport("struck", {struck, dam, counterResult});
 		// assume no double KOs for now
 		if (targ.HP <= 0) {
-			report("ko", {kod: targ});
+			batReport("ko", {kod: targ});
 			return {winner: enac, result: "KO"};
 		}
 		if (enac.HP <= 0) {
-			report("ko", {kod: enac});
+			batReport("ko", {kod: enac});
 			return {winner: targ, result: "KO"};
 		}
 	} else {
-		report("miss", {enac, targ});
+		batReport("miss", {enac, targ});
 	}
 
 	return {winner: null, result: null}
@@ -326,7 +351,7 @@ function resolveBatRound(enac, targ) {
 function smartAct(fi) {
   const atkDam = Math.max(fi.AT - fi.opp.DF, 1);
   const magDam = Math.max(fi.MG - fi.opp.MG, 1);
-  // console.log(atkDam, magDam);
+  // report(atkDam, magDam);
   // always use AT / MG if it's better blocked than the other unblocked
   if (magDam / 2 > atkDam) return "Magic";
   if (atkDam / 2 > magDam) return pickItem(["Attack", "Attack", "Superstrike"]);
@@ -364,17 +389,17 @@ function center(text, char = " ") {
 }
 
 function fullBattle(p1, p2) {
-  console.log(banner());
-  console.log(center(`${p1.name} vs ${p2.name}!`))
-  console.log(dashLine());
+  report(banner());
+  report(center(`${p1.name} vs ${p2.name}!`))
+  report(dashLine());
   [p1, p2].forEach(p => {
-    console.log((p.name + ": ").padEnd(10, " ") +  ['AT', 'DF', 'MG', 'SP',].map(stat => stat + ": " + p[stat]).join(" ")
+    report((p.name + ": ").padEnd(10, " ") +  ['AT', 'DF', 'MG', 'SP',].map(stat => stat + ": " + p[stat]).join(" ")
     + ` HP: ${p.HP}/${p.base.HP}`);
   });
     
-  console.log(dashLine());
-  console.log(center("Battle Start!"))
-  console.log(banner());
+  report(dashLine());
+  report(center("Battle Start!"))
+  report(banner());
 	
   battleReset(p1);
 	battleReset(p2);

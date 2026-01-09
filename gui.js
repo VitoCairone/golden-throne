@@ -1,6 +1,6 @@
 const controlsEl = document.getElementById("controls");
 controlsEl.style.border = "3px solid black";
-controlsEl.style.width = "100px";
+controlsEl.style.width = "300px";
 controlsEl.style.height = "600px";
 // controlsEl.style.display = "inline-block";
 controlsEl.style.backgroundColor = "violet";
@@ -18,7 +18,7 @@ rollBtn.onclick = function() { clickRoll(); }
 
 function clickRoll() {
   const r = roll(6);
-  console.log(`${actPlayer.name} rolled a ${r}.`);
+  report(`${actPlayer.name} rolled a ${r}.`);
   setDist(actPlayer, r);
   advancePhase();
 }
@@ -44,6 +44,16 @@ function showPlayerInfo() {
   ["AT", "DF", "MG", "SP"].forEach(stat => {
     document.getElementById(stat).innerHTML = `${stat}: ${parseInt(p0[stat])}`;
   })
+}
+
+let reportLines = [];
+const REPORT_LINE_LIMIT = 22;
+const reportEl = document.getElementById("history");
+
+function report(line) {
+  if (reportLines.length > REPORT_LINE_LIMIT) reportLines.shift();
+  reportLines.push(line);
+  reportEl.innerHTML = reportLines.join("<br>\n");
 }
 
 // bodyEl.appendChild(controlsEl);

@@ -23,12 +23,12 @@ for (var j = 0; j < gridH; j++) {
     div.style.left = `${i * tilePx}px`;
     div.style.top = `${j * tilePx}px`;
     div.style.backgroundColor = `#0f0`;
-    // console.log("ch = " + ch);
+    // report("ch = " + ch);
     switch (ch) {
       case "-":
       case "<":
       case ">":
-        // console.log("horiz");
+        // report("horiz");
         div.style.borderTop = "10px solid #0f0";
         div.style.borderBottom = "10px solid #0f0";
         div.style.height = "10px";
@@ -39,7 +39,7 @@ for (var j = 0; j < gridH; j++) {
       case "|":
       case "^":
       case "v":
-        // console.log("vert");
+        // report("vert");
         div.style.borderLeft = "10px solid #0f0";
         div.style.borderRight = "10px solid #0f0";
         div.style.width = "10px";
@@ -151,12 +151,12 @@ function movePlayerPiece(p) {
   p.el.style.top = `${tilePx * p.loc.j + 4}px`;
 }
 
-console.log("Ran cartog");
-console.log([gridW, gridH]);
+// report("Ran cartog");
+// report([gridW, gridH]);
 
 function showDestination(node) { 
-  // console.log("show");
-  // console.log(node);
+  // report("show");
+  // report(node);
   node.el.style.border = "5px solid white"; 
   node.el.style.height = `${tilePx - 10}px`; 
   node.el.style.width = `${tilePx - 10}px`; 
