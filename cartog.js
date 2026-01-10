@@ -104,23 +104,23 @@ function toUpper(str) {
 
 function makePlayer(idx) {
   const p = {
-    idx: idx,
+    id: idx,
     gold: 0,
     items: [],
     fieldMagics: [],
     gold: 0,
     loc: startNode,
-    AT: 5,
-    DF: 5,
-    MG: 5,
-    SP: 5,
-    HP: 50,
-    MHP: 5
+    weapon: "Unarmed",
+    shield: "Shieldless"
   };
+  console.log("made ")
+  console.log(p);
   p.color = pickItem(freeColors);
   freeColors = freeColors.filter(c => c !== p.color);
   p.name = toUpper(p.color);
-  p.isHuman = (p.idx === 0);
+  p.isHuman = (p.id === 0);
+
+  setFighterStartClass(p);
 
   const div = document.createElement("div");
   // div.style.backgroundColor = p.color;
@@ -132,7 +132,7 @@ function makePlayer(idx) {
   div.style.borderRight = `20px solid transparent`;
   div.style.borderBottom = `20px solid ${p.color}`;
   div.style.position = "absolute";
-  div.style.zIndex = 104 - p.idx;
+  div.style.zIndex = 104 - p.id;
   p.el = div;
 
   movePlayerPiece(p);
@@ -147,7 +147,7 @@ p2.nextPlayer = p3;
 p3.nextPlayer = p0;
 
 function movePlayerPiece(p) {
-  p.el.style.left = `${Math.round(tilePx * p.loc.i + (p.idx - 2) * (tilePx / 3), 0)}px`;
+  p.el.style.left = `${Math.round(tilePx * p.loc.i + (p.id - 2) * (tilePx / 3), 0)}px`;
   p.el.style.top = `${tilePx * p.loc.j + 4}px`;
 }
 

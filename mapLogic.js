@@ -1,4 +1,5 @@
 WEAPON_AT_BY_NAME = {
+  'Unarmed': 0,
   'Stick': 2,
   'Dagger': 10,
   'Sword': 20,
@@ -6,6 +7,7 @@ WEAPON_AT_BY_NAME = {
 }
 
 SHIELD_DF_BY_NAME = {
+  'Shieldless': 0,
   'Makeshift Shield': 2,
   'Wood Shield': 4,
   'Sturdy Shield': 8,
@@ -85,7 +87,7 @@ const phaseNames = [
 function advancePhase() {
   // phase names should suggest the player input waited on.
   actPhaseIdx = (actPhaseIdx + 1) % 3;
-  report(`--- ${actPlayer.name} (${actPlayer.idx}) phase ${actPhaseIdx} ---`);
+  // report(`--- ${actPlayer.name} phase ${actPhaseIdx} ---`);
   switch (actPhaseIdx) {
     case 0:
       if (actPlayer.isHuman) {

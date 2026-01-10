@@ -197,21 +197,22 @@ function capStart(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-function setFighterClass(fi, cls) {
-	if (typeof fi === "number") fi = makePlayer(fi);
-	// TODO: enable non-start classes
+// TODO: enable non-start class setting
+function setFighterStartClass(fi, cls = null) {
 	cls = cls || randomClass();
 	if (!(cls in startClasses)) {
-		report("ERR: setFigherClass got invalid cls");
+		report("ERR: setFighterStartClass got invalid cls");
 		report(cls);
 		return;
 	}
 
+	fi.base ||= {};
 	["AT", "MG", "DF", "SP", "MHP"].forEach(stat => {
-		fi[stat] = startClasses[cls][stat];
+		fi.base[stat] = startClasses[cls][stat];
+		fi[stat] = fi.base[stat];
 	});
-	fi.HP = fi.MHP * 10;
-	
+	fi.base.HP = fi.MHP * 10;
+	fi.HP = fi.base.HP;
 	fi.oppId = null;
 	fi.priorAtkCmd = null;
 	fi.priorDefCmd = null;
@@ -222,32 +223,25 @@ function setFighterClass(fi, cls) {
 	return fi;
 }
 
-function makeFi(opts, player = null) {
-	const def = startClasses;
-	const cls = opts?.cls || randomClass();
-	const newFi = {
-		id: opts?.id || getNextId(),
-		base: {},
-		cls: cls,
-		AT: opts?.AT || def[cls].AT,
-		DF: opts?.DF || def[cls].DF,
-		HP: opts?.HP || opts?.MHP * 10 || def[cls].MHP * 10,
-		SP: opts?.SP || def[cls].SP,
-		MG: opts?.MG || def[cls].MG,
-		MHP: opts?.MHP || def[cls].MHP,
-		name: opts?.name || capStart(cls),
-		oppId: null,
-		priorAtkCmd: null,
-		priorDefCmd: null,
-		Skill: "Charge",
-		Magic: "Pickpocket",
-		isSkillOn: false,
-	}
-	allSixStats.forEach(stat => {
-		newFi.base[stat] = newFi[stat];
-	});
-	return newFi;
-}
+// function makeFi(opts, player = null) {
+// 	const cls = opts?.cls || randomClass();
+
+// 	if (player) return setFighterStartClass(player, cls);
+
+// 	const newFi = {
+// 		id: opts?.id || getNextId(),
+// 		base: {},
+// 		name: opts?.name || capStart(cls),
+// 		oppId: null,
+// 		priorAtkCmd: null,
+// 		priorDefCmd: null,
+// 		Skill: "Charge",
+// 		Magic: "Pickpocket",
+// 		isSkillOn: false,
+// 	}
+
+// 	return newFi;
+// }
 
 function execSkill(enac, targ = null) {
 	switch (enac.Skill) {
@@ -376,6 +370,8 @@ function battleReset(fi) {
 	allSixStats.forEach(stat => {
 		fi[stat] = fi.base[stat];
 	});
+	fi.AT += weaponAT(fi);
+	fi.DF += shieldDF(fi);
 	fi.isSkillOn = false;
 }
 
@@ -388,11 +384,11 @@ function center(text, char = " ") {
   return char.repeat(rptLen) + " " + text + " " + char.repeat(rptLen);
 }
 
-function fullBattle(p1, p2) {
+function fullBattle(pA, pB) {
   report(banner());
-  report(center(`${p1.name} vs ${p2.name}!`))
+  report(center(`${pA.name} vs ${pB.name}!`))
   report(dashLine());
-  [p1, p2].forEach(p => {
+  [pA, pB].forEach(p => {
     report((p.name + ": ").padEnd(10, " ") +  ['AT', 'DF', 'MG', 'SP',].map(stat => stat + ": " + p[stat]).join(" ")
     + ` HP: ${p.HP}/${p.base.HP}`);
   });
@@ -401,21 +397,23 @@ function fullBattle(p1, p2) {
   report(center("Battle Start!"))
   report(banner());
 	
-  battleReset(p1);
-	battleReset(p2);
-  p1.opp = p2;
-  p2.opp = p1;
+  battleReset(pA);
+	battleReset(pB);
+  pA.opp = pB;
+  pB.opp = pA;
 
 	var enac, targ;
-	var p1Spd = Math.random() * p1.SP;
-	var p2Spd = Math.random() * p2.SP;
-	if (p1Spd > p2Spd) {
-		enac = p1;
-		targ = p2;
+	var pASpd = Math.random() * pA.SP;
+	var pBSpd = Math.random() * pB.SP;
+	if (pASpd > pBSpd) {
+		enac = pA;
+		targ = pB;
 	} else {
-		enac = p2;
-		targ = p1;
+		enac = pB;
+		targ = pA;
 	}
+
+	report(`${enac.name} goes first!`)
 
   let turn = 0;
 	let result = {};
@@ -433,17 +431,19 @@ function fullBattle(p1, p2) {
   return result;
 }
 
-const fi1 = makeFi();
-const fi2 = makeFi(
-	{cls: pickItem(startClassList.filter(cls => cls != fi1.cls))}
-);
-
 function classWinCompare(level = 50, matches = 100) {
   var outcomes = [];
   for (var m = 0; m < matches; m++) { ; }
 }
 
-levelUp(fi1, 10);
-levelUp(fi2, 10);
+function testBattle() {
+	const fi1 = makeFi();
+	const fi2 = makeFi(
+		{cls: pickItem(startClassList.filter(cls => cls != fi1.cls))}
+	);
 
-fullBattle(fi1, fi2);
+	levelUp(fi1, 10);
+	levelUp(fi2, 10);
+
+	fullBattle(fi1, fi2);
+}
