@@ -111,9 +111,25 @@ function advancePhase() {
   }
 }
 
-function startCombat(p) {
-  report("Combat from Map NYI");
-  return;
+function makeMonster() {
+  const monster = makeFighter(pickItem(ALL_MONSTERS));
+  monster.isMonster = true;
+  return monster;
+}
+
+function startCombat(p, foe = null) {
+  if (!foe) {
+    foe = makeMonster();
+    p.loc.monster = foe;
+  }
+
+  p.loc.isBattle = true;
+  result = battleRound(p, foe);
+
+  if (result.winner) {
+    if (foe.isMonster && result.winner !== foe) p.loc.monster = null;
+    p.loc.isBattle = false;
+  }
 }
 
 function endGame(first) {

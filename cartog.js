@@ -103,15 +103,14 @@ function toUpper(str) {
 }
 
 function makePlayer(idx) {
+  // this method returns a Player,
+  // with fields used on the Map, excepting in Combat
   const p = {
     id: idx,
     gold: 0,
     items: [],
     fieldMagics: [],
-    gold: 0,
     loc: startNode,
-    weapon: "Unarmed",
-    shield: "Shieldless"
   };
   console.log("made ")
   console.log(p);

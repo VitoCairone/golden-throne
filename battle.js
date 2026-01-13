@@ -197,6 +197,32 @@ function capStart(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+const allMonsters = [
+  [makeMonster({name: 'Kobold', AT: 4, DF: 2, MG: 2, SP: 2, HP: 15})]
+];
+
+function makeFighter(opts, player = null) {
+	const fi = player || {};
+	
+	fi.name = player?.name || opts?.name || "Unnamed"
+	fi.weapon = "Unarmed";
+	fi.shield = "Shieldless";
+	fi.base = {};
+	["AT", "MG", "DF", "SP", "HP"].forEach(stat => {
+		fi[stat] = opts[stat];
+		fi.base[stat] = fi[stat];
+	});
+	fi.MHP = fi.HP / 10;
+	fi.base.MHP = fi.MHP;
+	fi.oppId = null;
+	fi.Cmd = null;
+	fi.Skill = "Charge";
+	fi.Magic = "Pickpocket";
+	fi.isSkillOn = false;
+
+	return fi;
+}
+
 // TODO: enable non-start class setting
 function setFighterStartClass(fi, cls = null) {
 	cls = cls || randomClass();
@@ -206,21 +232,7 @@ function setFighterStartClass(fi, cls = null) {
 		return;
 	}
 
-	fi.base ||= {};
-	["AT", "MG", "DF", "SP", "MHP"].forEach(stat => {
-		fi.base[stat] = startClasses[cls][stat];
-		fi[stat] = fi.base[stat];
-	});
-	fi.base.HP = fi.MHP * 10;
-	fi.HP = fi.base.HP;
-	fi.oppId = null;
-	fi.priorAtkCmd = null;
-	fi.priorDefCmd = null;
-	fi.Skill = "Charge";
-	fi.Magic = "Pickpocket";
-	fi.isSkillOn = false;
-
-	return fi;
+	return makeFighter(fi, startClasses[cls]);
 }
 
 // function makeFi(opts, player = null) {
@@ -351,7 +363,7 @@ function smartAct(fi) {
   if (atkDam / 2 > magDam) return pickItem(["Attack", "Attack", "Superstrike"]);
   // otherwise select based on proportional damage roll
   const tot = atkDam + magDam;
-  if (Math.random() > magDam / tot) return pickItem(["Attack", "Superstrike"]);
+  if (Math.random() > atkDam / tot) return pickItem(["Attack", "Superstrike"]);
   return "Magic";
 }
 
@@ -366,10 +378,12 @@ function setCommand(player, mode) {
   player.Cmd = pickItem(opts);
 }
 
-function battleReset(fi) {
+function battleReset(fi, resetHP = false) {
+	const origHP = fi.HP;
 	allSixStats.forEach(stat => {
 		fi[stat] = fi.base[stat];
 	});
+	if (!resetHP) fi.HP = origHP;
 	fi.AT += weaponAT(fi);
 	fi.DF += shieldDF(fi);
 	fi.isSkillOn = false;
@@ -384,6 +398,36 @@ function center(text, char = " ") {
   return char.repeat(rptLen) + " " + text + " " + char.repeat(rptLen);
 }
 
+function battleRound(pA, pB, pAtk = null) {
+	pA.opp = pB;
+	pB.opp = pA;
+	pA.turn ||= 0;
+	pB.turn ||= 0;
+	pA.turn++;
+	pB.turn++;
+	if (!pAtk) {
+		pAtk = doesAGoFirst(pA, pB) ? pA : pB;
+		report(`${pAtk.name} goes first!`)
+	}
+
+	// a round consists of two battle turns,
+	// which is what happens on one map turn
+
+	setCommand(pAtk, "act");
+	setCommand(pAtk.opp, "react");
+	let result = resolveBatRound(pAtk, pAtk.opp);
+
+	if (result.winner) return result;
+
+	setCommand(pAtk.opp, "act");
+	setCommand(pAtk, "react");
+	result = resolveBatRound(pAtk.opp, pAtk);
+
+	return result;
+}
+
+// fullBattle is provided for running many fights for balance testing,
+// it is not used in normal gameplay
 function fullBattle(pA, pB) {
   report(banner());
   report(center(`${pA.name} vs ${pB.name}!`))
@@ -399,41 +443,16 @@ function fullBattle(pA, pB) {
 	
   battleReset(pA);
 	battleReset(pB);
-  pA.opp = pB;
-  pB.opp = pA;
 
-	var enac, targ;
-	var pASpd = Math.random() * pA.SP;
-	var pBSpd = Math.random() * pB.SP;
-	if (pASpd > pBSpd) {
-		enac = pA;
-		targ = pB;
-	} else {
-		enac = pB;
-		targ = pA;
-	}
-
-	report(`${enac.name} goes first!`)
-
-  let turn = 0;
-	let result = {};
+	let enac = null;
 	while (!result.winner) {
-    turn++;
-		setCommand(enac, "act");
-		setCommand(targ, "react");
-		result = resolveBatRound(enac, targ);
-		var oldTarg = targ;
-		targ = enac;
-		enac = oldTarg;
+		// setCommand(enac, "act");
+		// setCommand(targ, "react");
+		result = resolveBatRound(pA, pB, enac);
 	}
 
-  result.turns = turn;
+  result.turns = pA.turn;
   return result;
-}
-
-function classWinCompare(level = 50, matches = 100) {
-  var outcomes = [];
-  for (var m = 0; m < matches; m++) { ; }
 }
 
 function testBattle() {
