@@ -1,4 +1,4 @@
-WEAPON_AT_BY_NAME = {
+const WEAPON_AT_BY_NAME = {
   'Unarmed': 0,
   'Stick': 2,
   'Dagger': 10,
@@ -6,7 +6,7 @@ WEAPON_AT_BY_NAME = {
   'Longsword': 25
 }
 
-SHIELD_DF_BY_NAME = {
+const SHIELD_DF_BY_NAME = {
   'Shieldless': 0,
   'Makeshift Shield': 2,
   'Wood Shield': 4,

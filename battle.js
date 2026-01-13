@@ -42,24 +42,24 @@ function doesAGoFirst(a, b) {
 }
 
 const startClasses = {
-	warrior: {AT: 5, DF: 4, MG: 1, SP: 2, MHP: 5,
-		level: {AT: 2, DF: 1, MHP: 1},
+	warrior: {AT: 5, DF: 4, MG: 1, SP: 2, HP: 50,
+		level: {AT: 2, DF: 1, HP: 10},
 		skills: [
 			{name: "Muscle", effect: "AT & DF +50%"},
 			{name: "Overload", effect: "Double AT on success, half DF on failure" }
 		],
 		field: "At turn start, chance to gain AT Boost"
 	},
-	mage: {AT: 5, DF: 2, MG: 3, SP: 3, MHP: 4, 
-		level: {MG: 2, SP: 1, MHP: 1},
+	mage: {AT: 5, DF: 2, MG: 3, SP: 3, HP: 40, 
+		level: {MG: 2, SP: 1, HP: 10},
 		skills: [
 			{ name: "Meditate", effect: "Doubles MG" },
 			{ name: "Restrict", effect: "Seals one random enemy command"}
 		],
 		field: "Can use 2 Field Magic per turn"
 	},
-	thief: {AT: 5, DF: 3, MG: 1, SP: 4, MHP: 4,
-		level: {AT: 1, SP: 2, MHP: 1},
+	thief: {AT: 5, DF: 3, MG: 1, SP: 4, HP: 40,
+		level: {AT: 1, SP: 2, HP: 10},
 		skills: [
 			{name: "Steal", effect: "Steal posesssions or gold"},
 			{name: "Escape", effect: "Exit battle with no penalty"}
@@ -87,13 +87,12 @@ function levelUp(fi, times = 1, stats = "auto") {
   } else {
     report("NYI - non-auto stat level up");
   }
-  fi.base.HP = fi.base.MHP * 10;
   battleReset(fi);
 }
 
 const allClasses = {
 	cleric: {
-		level: {MG: 1, DF: 1, MHP: 2},
+		level: {MG: 1, DF: 1, HP: 20},
 		skills: [
 			{name: "Heal", effect: "Recover HP"},
 			{name: "Prayer", effect: "Random Stat +50% or Status Immunity"}
@@ -116,7 +115,7 @@ const allClasses = {
 		field: "Random chance (25%*) to begin with Double Spinner"
 	},
 	titan: {
-		level: {DF: 2, MHP: 2},
+		level: {DF: 2, HP: 20},
 		skills: [
 			{name: "Steel Guard", effect: "Doubles DF"},
 			{name: "Unstoppable", effect: "Status Immunity"}
@@ -187,9 +186,7 @@ function randomClass() {
 	return pickItem(["mage", "thief", "warrior"]);
 }
 
-const allFiveStats = ["AT", "DF", "SP", "MG", "MHP"]
-// TODO: consider removing allSix and always handle HP separately
-const allSixStats = ["AT", "DF", "HP", "SP", "MG", "MHP"];
+const allFiveStats = ["AT", "DF", "SP", "MG", "HP"]
 
 function capStart(str) {
   if (!str || !str?.length) return str;
@@ -211,8 +208,6 @@ function makeFighter(opts, player = null) {
 		fi[stat] = opts[stat];
 		fi.base[stat] = fi[stat];
 	});
-	fi.MHP = fi.HP / 10;
-	fi.base.MHP = fi.MHP;
 	fi.oppId = null;
 	fi.Cmd = null;
 	fi.Skill = "Charge";
@@ -362,7 +357,7 @@ function setCommand(player, mode) {
 
 function battleReset(fi, resetHP = false) {
 	const origHP = fi.HP;
-	allSixStats.forEach(stat => {
+	allFiveStats.forEach(stat => {
 		fi[stat] = fi.base[stat];
 	});
 	if (!resetHP) fi.HP = origHP;

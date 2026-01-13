@@ -44,7 +44,7 @@ function disableRoll() {
 
 function showPlayerInfo() {
   document.getElementById("player-name").innterHTML = p0.name;
-  document.getElementById("HP").innerHTML = `HP: ${p0.HP}/${p0.MHP * 10}`;
+  document.getElementById("HP").innerHTML = `HP: ${p0.HP}/${p0.base.HP}`;
   ["AT", "DF", "MG", "SP"].forEach(stat => {
     document.getElementById(stat).innerHTML = `${stat}: ${parseInt(p0[stat])}`;
   })
