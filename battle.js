@@ -197,8 +197,8 @@ function capStart(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-const allMonsters = [
-  [makeMonster({name: 'Kobold', AT: 4, DF: 2, MG: 2, SP: 2, HP: 15})]
+const ALL_MONSTERS = [
+  [makeFighter({name: 'Kobold', AT: 4, DF: 2, MG: 2, SP: 2, HP: 15})]
 ];
 
 function makeFighter(opts, player = null) {
@@ -234,26 +234,6 @@ function setFighterStartClass(fi, cls = null) {
 
 	return makeFighter(fi, startClasses[cls]);
 }
-
-// function makeFi(opts, player = null) {
-// 	const cls = opts?.cls || randomClass();
-
-// 	if (player) return setFighterStartClass(player, cls);
-
-// 	const newFi = {
-// 		id: opts?.id || getNextId(),
-// 		base: {},
-// 		name: opts?.name || capStart(cls),
-// 		oppId: null,
-// 		priorAtkCmd: null,
-// 		priorDefCmd: null,
-// 		Skill: "Charge",
-// 		Magic: "Pickpocket",
-// 		isSkillOn: false,
-// 	}
-
-// 	return newFi;
-// }
 
 function execSkill(enac, targ = null) {
 	switch (enac.Skill) {
