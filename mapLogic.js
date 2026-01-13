@@ -112,7 +112,7 @@ function advancePhase() {
 }
 
 function makeMonster() {
-  const monster = makeFighter(pickItem(ALL_MONSTERS));
+  const monster = makeFighter(pickItem(ALL_MONSTER_KINDS));
   monster.isMonster = true;
   return monster;
 }

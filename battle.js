@@ -67,6 +67,10 @@ const startClasses = {
 		field: "Steal opponent posessions when passing by"
 	},
 };
+const startClassList = Object.keys(startClasses);
+startClassList.forEach(cls => {
+	startClasses[cls].name = cls;
+})
 
 function levelUp(fi, times = 1, stats = "auto") {
   const cls = allClasses[fi.cls]
@@ -86,11 +90,6 @@ function levelUp(fi, times = 1, stats = "auto") {
   fi.base.HP = fi.base.MHP * 10;
   battleReset(fi);
 }
-
-const startClassList = Object.keys(startClasses);
-startClassList.forEach(cls => {
-	startClasses[cls].name = cls;
-})
 
 const allClasses = {
 	cleric: {
@@ -171,7 +170,7 @@ startClassList.forEach(starter => {
 });
 const allClassesList = Object.keys(startClasses);
 
-var g_nextId = 1;
+let g_nextId = 1;
 
 function getNextId() {
 	var nextId = g_nextId;
@@ -197,8 +196,8 @@ function capStart(str) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-const ALL_MONSTERS = [
-  [makeFighter({name: 'Kobold', AT: 4, DF: 2, MG: 2, SP: 2, HP: 15})]
+const ALL_MONSTER_KINDS = [
+  {name: 'Kobold', AT: 4, DF: 2, MG: 2, SP: 2, HP: 15}
 ];
 
 function makeFighter(opts, player = null) {
@@ -224,7 +223,7 @@ function makeFighter(opts, player = null) {
 }
 
 // TODO: enable non-start class setting
-function setFighterStartClass(fi, cls = null) {
+function makeFighterByClass(fi, cls = null) {
 	cls = cls || randomClass();
 	if (!(cls in startClasses)) {
 		report("ERR: setFighterStartClass got invalid cls");
@@ -232,7 +231,10 @@ function setFighterStartClass(fi, cls = null) {
 		return;
 	}
 
-	return makeFighter(fi, startClasses[cls]);
+	console.log("!!!!!! proceeding to makeFighter");
+	console.log("fi before =");
+	console.log(fi);
+	return makeFighter(startClasses[cls], fi);
 }
 
 function execSkill(enac, targ = null) {

@@ -12,7 +12,11 @@ rollBtn.style.margin = "5px 5px 5px 5px";
 rollBtn.innerHTML = "Roll";
 // controlsEl.appendChild(rollBtn);
 
-let actPlayer = p0;
+let reportLines = [];
+const REPORT_LINE_LIMIT = 22;
+const reportEl = document.getElementById("history");
+
+let actPlayer;
 
 rollBtn.onclick = function() { clickRoll(); }
 
@@ -46,15 +50,8 @@ function showPlayerInfo() {
   })
 }
 
-let reportLines = [];
-const REPORT_LINE_LIMIT = 22;
-const reportEl = document.getElementById("history");
-
 function report(line) {
   if (reportLines.length > REPORT_LINE_LIMIT) reportLines.shift();
   reportLines.push(line);
   reportEl.innerHTML = reportLines.join("<br>\n");
 }
-
-// bodyEl.appendChild(controlsEl);
-showPlayerInfo();

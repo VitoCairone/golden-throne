@@ -119,7 +119,9 @@ function makePlayer(idx) {
   p.name = toUpper(p.color);
   p.isHuman = (p.id === 0);
 
-  setFighterStartClass(p);
+  makeFighterByClass(p);
+
+  console.log(`Called setFighterStartClass for ${p.name}}`)
 
   const div = document.createElement("div");
   // div.style.backgroundColor = p.color;
@@ -139,19 +141,10 @@ function makePlayer(idx) {
   return p;
 }
 
-const [p0, p1, p2, p3] = [0, 1, 2, 3].map(idx => makePlayer(idx));
-p0.nextPlayer = p1;
-p1.nextPlayer = p2;
-p2.nextPlayer = p3;
-p3.nextPlayer = p0;
-
 function movePlayerPiece(p) {
   p.el.style.left = `${Math.round(tilePx * p.loc.i + (p.id - 2) * (tilePx / 3), 0)}px`;
   p.el.style.top = `${tilePx * p.loc.j + 4}px`;
 }
-
-// report("Ran cartog");
-// report([gridW, gridH]);
 
 function showDestination(node) { 
   // report("show");
