@@ -5,22 +5,37 @@
   <div id="alt-view"></div>
 
     <div id="start-screen">
-      <button id="start-btn"></button>  
+      <button id="start-btn">New Game</button>  
     </div> 
 
     <div id="players-screen" style="display:none">
-      <button id="2-v-0">2 Players</button>
-      <button id="1-v-1">1 Playwr vs 1 CPU</button>
-      <button id="1-v-2">1 Player vs 2 CPU</button>
-      <button id="2-v-1">2 Players vs 1 CPU</button>
-      <button id="2-v-2">2 Players vs 2 CPU</button>
+      <button id="2-v-0">2 Players</button><br>
+      <button id="1-v-1">1 Playwr vs 1 CPU</button><br>
+      <button id="1-v-2">1 Player vs 2 CPU</button><br>
+      <button id="2-v-1">2 Players vs 1 CPU</button><br>
+      <button id="2-v-2">2 Players vs 2 CPU</button><br>
     </div>
 
     <div id="player-setup" style="display:none">
-      <button id="name-btn">Name</button>
-      <button id="sex-btn">Male</button>
-      <button id="cls-btn">Warrior</button>
-      <button id="color-btn">Red</button>
+      <input id="name-inp" name="name" type="text"><br>
+      <select id="sex-sel">
+        <option id="Male-opt" value="Male">Male</option>
+        <option id="Female-opt" value="Female">Female</option>
+      </select><br>
+      <select id="job-sel">
+        <option id="Warrior-opt" value="Warrior">Warrior</option>
+        <option id="Thief-opt" value="Thief">Thief</option>
+        <option id="Mage-opt" value="Mage">Mage</option>
+      </select><br>
+      <select id="color-sel">
+        <option id="Red-opt" value="Red">Red</option>
+        <option id="Green-opt" value="Green">Green</option>
+        <option id="Blue-opt" value="Blue">Blue</option>
+        <option id="Black-opt" value="Black">Black</option>
+        <option id="Yellow-opt" value="Yellow">Yellow</option>
+        <option id="Orange-opt" value="Orange">Orange</option>
+        <option id="Pink-opt" value="Pink">Pink</option>
+      </select><br>
       <button id="done-btn">Done</button>
     </div>
 
@@ -46,5 +61,6 @@
   <script src="./mapLogic.js"></script>
   <script src="./gui.js"></script>
   <script src="./main.js"></script>
+  <script src="./setupMenus.js"></script>
 </body>
 </html>
