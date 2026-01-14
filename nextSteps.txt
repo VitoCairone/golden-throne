@@ -1,4 +1,11 @@
-* integrate battle.js
+* add chargen 
+* allow arrow key inputs
+* make all map traversals non-instant
+* add manual combat Command decision for human player
+* ensure proper continuation of battle
+* add XP and Loot from monsters
+* add KO penalties vs monsters
+* add KO penalties in PvP
 * add delays to CPU actions
 
 DONE
@@ -6,3 +13,4 @@ DONE
 * alternate player & automated CPU turns -- 1/6
 * display player character stats & info on page -- 1/6
 * print history via HTML -- 1/6
+* integrate battle.js -- 1/13

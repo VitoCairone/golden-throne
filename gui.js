@@ -2,7 +2,6 @@ const controlsEl = document.getElementById("controls");
 controlsEl.style.border = "3px solid black";
 controlsEl.style.width = "300px";
 controlsEl.style.height = "600px";
-// controlsEl.style.display = "inline-block";
 controlsEl.style.backgroundColor = "violet";
 
 const rollBtn = document.getElementById("roll-btn");
@@ -10,7 +9,6 @@ rollBtn.style.width = "90%";
 rollBtn.style.height = "10%";
 rollBtn.style.margin = "5px 5px 5px 5px";
 rollBtn.innerHTML = "Roll";
-// controlsEl.appendChild(rollBtn);
 
 let reportLines = [];
 const REPORT_LINE_LIMIT = 22;

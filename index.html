@@ -2,16 +2,42 @@
 <head>
 </head>
 <body>
-  <div id="field"></div>
-  <div id="controls">
-    <button id="roll-btn"></button>
-    <div id="player-name"></div>
-    <div id="HP"></div>
-    <div id="AT"></div>
-    <div id="DF"></div>
-    <div id="MG"></div>
-    <div id="SP"></div>
-    <div id="history"></div>
+  <div id="alt-view"></div>
+
+    <div id="start-screen">
+      <button id="start-btn"></button>  
+    </div> 
+
+    <div id="players-screen" style="display:none">
+      <button id="2-v-0">2 Players</button>
+      <button id="1-v-1">1 Playwr vs 1 CPU</button>
+      <button id="1-v-2">1 Player vs 2 CPU</button>
+      <button id="2-v-1">2 Players vs 1 CPU</button>
+      <button id="2-v-2">2 Players vs 2 CPU</button>
+    </div>
+
+    <div id="player-setup" style="display:none">
+      <button id="name-btn">Name</button>
+      <button id="sex-btn">Male</button>
+      <button id="cls-btn">Warrior</button>
+      <button id="color-btn">Red</button>
+      <button id="done-btn">Done</button>
+    </div>
+
+  </div>
+
+  <div id="main-view" style="display: none">
+    <div id="field"></div>
+    <div id="controls">
+      <button id="roll-btn"></button>
+      <div id="player-name"></div>
+      <div id="HP"></div>
+      <div id="AT"></div>
+      <div id="DF"></div>
+      <div id="MG"></div>
+      <div id="SP"></div>
+      <div id="history"></div>
+    </div>
   </div>
 
   <script src="./mapIngest.js"></script>
