@@ -52,9 +52,10 @@ document.addEventListener("DOMContentLoaded", () => {
   /* --------------------------------------------------
      Start Screen
   -------------------------------------------------- */
-  startBtn.addEventListener("click", () => {
-    showOnly(playersScreen);
-  });
+
+  function clickStart() { showOnly(playersScreen); }
+
+  startBtn.addEventListener("click", () => clickStart());
 
   /* --------------------------------------------------
      Player Count Selection
@@ -74,6 +75,7 @@ document.addEventListener("DOMContentLoaded", () => {
      Setup Screen Logic
   -------------------------------------------------- */
   function prepareSetupForPlayer() {
+    document.getElementById("player-idx").innerHTML = (currentPlayerIndex + 1).toString();
     nameInput.value = "Name";
     sexSelect.value = "Male";
     jobSelect.value = "Warrior";
@@ -115,6 +117,20 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
       advanceToMainView();
       console.log("Players configured:", playerConfigs);
+    }
+  });
+
+  document.addEventListener("keydown", function(event) {
+    // Check if the key pressed is the 'Enter' key
+    if (event.key === "Enter") {
+      // Optional: Prevent the default action (e.g., form submission if one is present)
+      // event.preventDefault();
+
+      if (startScreen.style.display === "block") {
+        clickStart();
+      };
+    } else if (event.key === "ArrowUp") {
+      ;
     }
   });
 });
