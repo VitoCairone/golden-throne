@@ -1,3 +1,12 @@
+let IS_FULL_AUTO = false;
+// let CONSOLE_AWAIT_MODE = true;
+
+const readline = require('readline');
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
+
 function getDamage(enac, targ) {
 	var dam = 1;
 	// var variance = 0;
@@ -286,7 +295,7 @@ function batReport(code, opts) {
 	}
 }
 
-function resolveBatRound(enac, targ) {
+function resolveBout(enac, targ) {
 	if (targ.Cmd === "Give Up")
 		return {winner: enac, result: "forfeit"};
 
@@ -344,12 +353,18 @@ function smartAct(fi) {
   return "Magic";
 }
 
-function setCommand(player, mode) {
+function inputSetCommand(player, cmd) {
+	player.Cmd = cmd;
+	if (player.opp.Cmd) battleBout(player.isAtk ? player : player.opp);
+}
+
+function autoSetCommand(player, mode) {
   var opts;
   if (mode === "act") {
     if (!player.isSkillOn && Math.random() < 0.3) opts = ["Skill"];
     opts = [smartAct(player)];
   } else {
+		// TODO: use a sensible defence along the same lines as SmartAct
     opts = ["Defend", "Counter", "Ward"];
   }
   player.Cmd = pickItem(opts);
@@ -386,21 +401,32 @@ function battleRound(pA, pB, pAtk = null) {
 		pAtk = doesAGoFirst(pA, pB) ? pA : pB;
 		report(`${pAtk.name} goes first!`)
 	}
+	pAtk.isAtk = true;
+	pAtk.opp.isAtk = false;
 
 	// a round consists of two battle turns,
 	// which is what happens on one map turn
 
-	setCommand(pAtk, "act");
-	setCommand(pAtk.opp, "react");
-	let result = resolveBatRound(pAtk, pAtk.opp);
+	if (!(pA.isHuman) && !(pB.isHuman)) return noHumansBattleRound(pAtk);
 
-	if (result.winner) return result;
+	return { waitingFor: 'Cmd' };
+}
 
-	setCommand(pAtk.opp, "act");
-	setCommand(pAtk, "react");
-	result = resolveBatRound(pAtk.opp, pAtk);
-
+function battleBout(pAtk) {
+	if (!(pAtk.isHuman)) autoSetCommand(pAtk, "act");
+	if (!(pAtk.opp.isHuman)) autoSetCommand(pAtk.opp, "react");
+	const result = resolveBout(pAtk, pAtk.opp);
+	pAtk.Cmd = null;
+	pAtk.opp.Cmd = null;
 	return result;
+}
+
+function noHumansBattleRound(pAtk) {
+	let result = battleBout(pAtk);
+	if (result.winner) return result;
+	pAtk.isAtk = false;
+	pAtk.opp.isAtk = true;
+	return battleBout(pAtk.opp);
 }
 
 // fullBattle is provided for running many fights for balance testing,
@@ -421,11 +447,10 @@ function fullBattle(pA, pB) {
   battleReset(pA);
 	battleReset(pB);
 
-	let enac = null;
 	while (!result.winner) {
-		// setCommand(enac, "act");
-		// setCommand(targ, "react");
-		result = resolveBatRound(pA, pB, enac);
+		result = battleBout(pA);
+		pA.isAtk = !pA.isAtk;
+		pA.opp.isAtk = !pA.opp.isAtk;
 	}
 
   result.turns = pA.turn;
@@ -443,3 +468,10 @@ function testBattle() {
 
 	fullBattle(fi1, fi2);
 }
+
+// function getConsoleResponse() {
+// 	rl.question('Choose (S)trike (M)agic (A)ttack or (G)ive up? ', (name) => {
+// 		console.log(`Response was ${name}!`);
+// 		rl.close();
+// 	});
+// }

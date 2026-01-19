@@ -49,18 +49,17 @@ function startSpinner(kind, p) {
   // report(kind);
   switch (kind) {
     case "Item": choices = ["1 Crystal", "2 Crystal", "5 Crystal", "2 Spinner", "Power Potion", "Manabrew"];
-    break;
+      break;
     case "Magic": choices = ["Scorch", "Scorch", "Zap", "Slow", "Chill", "Enfeeble"];
-    break;
+      break;
     case "Weapon": choices = ["Stick", "Dagger", "Dagger", "Sword", "Sword", "Longsword"];
-    break;
+      break;
     case "Shield": choices = ["Wood Shield", "Wood Shield", "Sturdy Shield", "Sturdy Shield", "Makeshift Shield", "Iron Shield"]
-    break;
+      break;
     case "Gold": choices = [10, 25, 50, 50, 100, 200];
-    break;
+      break;
     default:
       report("ERR: Unknown kind to startSpinner");
-      report(kind);
       return;
   }
 
@@ -74,6 +73,10 @@ function startSpinner(kind, p) {
   }
 
   report(`${p.name} got ${got}${kind === "Gold" ? " gold" : ""} from ${kind} space.`);
+
+  // for now Spinner automatically assigns result and ends turn
+  // TODO: choice to replace Weapon / Shield
+  advancePhase();
 }
 
 let actPhaseIdx = 0;
@@ -86,10 +89,13 @@ const phaseNames = [
 
 function advancePhase() {
   // phase names should suggest the player input waited on.
-  actPhaseIdx = (actPhaseIdx + 1) % 3;
+
+  actPhaseIdx = (actPhaseIdx + 1) % 4;
+  isInBattle = actPlayer.loc.isBattle;
   // report(`--- ${actPlayer.name} phase ${actPhaseIdx} ---`);
   switch (actPhaseIdx) {
     case 0:
+      // Awaiting Roll button
       if (actPlayer.isHuman) {
         enableRoll();
       } else {
@@ -97,6 +103,7 @@ function advancePhase() {
       }
       break;
     case 1: 
+      // Roll decided, awaiting Destination Choice
       if (actPlayer.isHuman) {
         disableRoll();
       } else {
@@ -105,6 +112,9 @@ function advancePhase() {
       }
       break;
     case 2:
+      // Awaiting End Turn Decision
+      break;
+    case 3:
       actPlayer = actPlayer.nextPlayer;
       report(`${actPlayer.name}'s turn!`)
       advancePhase();
@@ -126,10 +136,16 @@ function startCombat(p, foe = null) {
   p.loc.isBattle = true;
   result = battleRound(p, foe);
 
+  if (result.waitingFor) return;
+
   if (result.winner) {
     if (foe.isMonster && result.winner !== foe) p.loc.monster = null;
     p.loc.isBattle = false;
   }
+}
+
+function clickCmd(cmd) {
+  gotPlayerCommand(p0, cmd);
 }
 
 function endGame(first) {

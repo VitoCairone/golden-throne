@@ -6,7 +6,7 @@ p3.nextPlayer = p0;
 
 actPlayer = p0;
 
-console.log("!!!!!!!");
-console.log(p0)
+// console.log("!!!!!!!");
+// console.log(p0)
 
 showPlayerInfo();

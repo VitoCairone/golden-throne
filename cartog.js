@@ -10,8 +10,6 @@ bodyEl.style.display = "flex";
 const fieldEl = document.getElementById("field");
 fieldEl.style.width = gridW * tilePx;
 fieldEl.style.height = gridH * tilePx;
-// fieldEl.style.display = "inline-block";
-// bodyEl.appendChild(fieldEl);
 
 for (var j = 0; j < gridH; j++) {
   for (var i = 0; i < gridW; i++) {

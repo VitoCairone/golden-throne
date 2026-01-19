@@ -16,9 +16,33 @@ document.addEventListener("DOMContentLoaded", () => {
   const colorSelect = document.getElementById("color-sel");
   const nameInput = document.getElementById('name-inp');
 
-  startBtn.style.width = "400px";
-  startBtn.style.height = "200px";
+  // startBtn.style.width = "400px";
+  // startBtn.style.height = "200px";
 
+  // TODO: resolve flex vs block to center elements on both single and
+  // multi-line displays
+
+  function centerContents(el) {
+    el.style.display = "flex";
+    el.style.justifyContent = "center";
+    el.style.alignItems = "center";
+    el.style.height = "100vh";
+  }
+
+  centerContents(bodyEl);
+  centerContents(altView);
+  centerContents(startScreen);
+  startScreen.style.display = "block";
+
+  // altView.style.display = "flex";
+  // altView.style.height = "100vh";
+  // altView.style.justifyContent = "center";
+  // altView.style.alignItems = "center";
+
+  // startScreen.style.display = "flex";
+  // startScreen.style.height = "100vh";
+  // startScreen.style.justifyContent = "center";
+  // startScreen.style.alignItems = "center";
 
   let totalHumanPlayers = 1;
   let currentPlayerIndex = 0;
@@ -126,11 +150,17 @@ document.addEventListener("DOMContentLoaded", () => {
       // Optional: Prevent the default action (e.g., form submission if one is present)
       // event.preventDefault();
 
-      if (startScreen.style.display === "block") {
+      if (startScreen.style.display === "block") { // TODO: more semantic check for showing
         clickStart();
       };
     } else if (event.key === "ArrowUp") {
-      ;
+      if (actPlayer.loc.isBattle) return clickCmd(actPlayer.isAtk ? "Magic" : "Ward");
+    } else if (event.key === "ArrowLeft") {
+      if (actPlayer.loc.isBattle) return clickCmd(actPlayer.isAtk ? "Strike" : "Counter");
+    } else if (event.key === "ArrowRight") {
+      if (actPlayer.loc.isBattle) return clickCmd(actPlayer.isAtk ? "Attack" : "Defend");
+    } else if (event.key === "ArrowDown") {
+      if (actPlayer.loc.isBattle) return clickCmd(actPlayer.isAtk ? "Skill" : "Give Up");
     }
   });
 });
