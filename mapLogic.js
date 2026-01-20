@@ -175,8 +175,8 @@ function runArrival(p) {
 
 function setDist(p, dist) {
   p.dist = dist;
-  p.dests = nodesAtDist(p.loc, dist);
-  p.dests.forEach(d => showDestination(d));
+  p.dests = nodesAndPathsAtDist(p.loc, dist);
+  p.dests.forEach(d => showDestination(d.node));
 }
 
 function movePlayer(p, dest) {

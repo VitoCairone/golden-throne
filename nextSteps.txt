@@ -1,5 +1,5 @@
-* allow arrow key inputs
 * make all map traversals non-instant
+* allow arrow key inputs
 * add manual combat Command decision for human
 * ensure proper continuation of battle
 * add XP and Loot from monsters

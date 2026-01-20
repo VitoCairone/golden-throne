@@ -1,3 +1,5 @@
+let inputContext = null;
+
 const controlsEl = document.getElementById("controls");
 controlsEl.style.border = "3px solid black";
 controlsEl.style.width = "300px";
@@ -22,6 +24,7 @@ function clickRoll() {
   const r = roll(6);
   report(`${actPlayer.name} rolled a ${r}.`);
   setDist(actPlayer, r);
+  inputContext = "move";
   advancePhase();
 }
 
@@ -30,6 +33,7 @@ function clickNode(node) {
     movePlayer(actPlayer, node);
     advancePhase();
   }
+  inputContext = null;
 }
 
 function enableRoll() {

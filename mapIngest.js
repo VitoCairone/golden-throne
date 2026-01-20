@@ -167,11 +167,26 @@ function roll(n) {
   return 1 + Math.floor(Math.random() * n);
 }
 
-function nodesAtDist(here, distRem, prior = null) {
-  if (!distRem) return [here]; // only for starting at 0
-  const nexts = ['n','e','w','s'].map(dir => here[dir]).filter(node => node && node !== prior);
-  if (distRem == 1) return nexts; // recursion stops here
-  return nexts.map(next => nodesAtDist(next, distRem - 1, here).flat()).flat();;
+// // DEPRECATED
+// function nodesAtDist(here, distRem, prior = null) {
+//   if (!distRem) return [here]; // only for starting at 0
+//   const nexts = ['n','e','w','s'].map(dir => here[dir]).filter(node => node && node !== prior);
+//   if (distRem == 1) return nexts; // recursion stops here
+//   return nexts.map(next => nodesAtDist(next, distRem - 1, here).flat()).flat();
+// }
+
+function nodesAndPathsAtDist(here, distRem, prior = null) {
+  if (!distRem) return [{ dest: here, pathTo: [] }];
+
+  return DIRS
+    .map(d => here[d])
+    .filter(n => n && n !== prior)
+    .flatMap(n =>
+      nodesAndPathsAtDist(n, distRem - 1, here).map(r => ({
+        dest: r.dest,
+        pathTo: [n, ...r.pathTo]
+      }))
+    );
 }
 
 function pickItem(x) {
