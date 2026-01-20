@@ -353,7 +353,7 @@ function smartAct(fi) {
   return "Magic";
 }
 
-function inputSetCommand(player, cmd) {
+function gotPlayerCommand(player, cmd) {
 	player.Cmd = cmd;
 	if (player.opp.Cmd) battleBout(player.isAtk ? player : player.opp);
 }

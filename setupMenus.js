@@ -26,13 +26,15 @@ document.addEventListener("DOMContentLoaded", () => {
     el.style.display = "flex";
     el.style.justifyContent = "center";
     el.style.alignItems = "center";
+    el.style.flexDirection = "column";
     el.style.height = "100vh";
   }
 
   centerContents(bodyEl);
   centerContents(altView);
   centerContents(startScreen);
-  startScreen.style.display = "block";
+  centerContents(playersScreen);
+  centerContents(setupScreen);
 
   // altView.style.display = "flex";
   // altView.style.height = "100vh";
@@ -55,7 +57,7 @@ document.addEventListener("DOMContentLoaded", () => {
     [startScreen, playersScreen, setupScreen].forEach(div => {
       div.style.display = "none";
     });
-    element.style.display = "block";
+    element.style.display = "flex";
   }
 
   function advanceToMainView() {
@@ -150,7 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
       // Optional: Prevent the default action (e.g., form submission if one is present)
       // event.preventDefault();
 
-      if (startScreen.style.display === "block") { // TODO: more semantic check for showing
+      if (startScreen.style.display === "flex") { // TODO: more semantic check for showing
         clickStart();
       };
     } else if (event.key === "ArrowUp") {
