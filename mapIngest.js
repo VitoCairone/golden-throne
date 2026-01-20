@@ -167,14 +167,19 @@ function roll(n) {
   return 1 + Math.floor(Math.random() * n);
 }
 
-// // DEPRECATED
-// function nodesAtDist(here, distRem, prior = null) {
-//   if (!distRem) return [here]; // only for starting at 0
-//   const nexts = ['n','e','w','s'].map(dir => here[dir]).filter(node => node && node !== prior);
-//   if (distRem == 1) return nexts; // recursion stops here
-//   return nexts.map(next => nodesAtDist(next, distRem - 1, here).flat()).flat();
-// }
+const DIRS = ['n', 'e', 'w', 's'];
 
+// Use for highlighting valid destinations only
+function nodesAtDist(here, distRem, prior = null) {
+  if (!distRem) return [here];
+
+  return DIRS
+    .map(d => here[d])
+    .filter(n => n && n !== prior)
+    .flatMap(n => nodesAtDist(n, distRem - 1, here));
+}
+
+// Use for automatic pathing
 function nodesAndPathsAtDist(here, distRem, prior = null) {
   if (!distRem) return [{ dest: here, pathTo: [] }];
 

@@ -147,21 +147,21 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   document.addEventListener("keydown", function(event) {
-    // Check if the key pressed is the 'Enter' key
     if (event.key === "Enter") {
       // Optional: Prevent the default action (e.g., form submission if one is present)
       // event.preventDefault();
-
-      if (startScreen.style.display === "flex") { // TODO: more semantic check for showing
-        clickStart();
-      };
+      if (startScreen.style.display !== "none") clickStart();
     } else if (event.key === "ArrowUp") {
+      if (inputContext === "move") return moveStep("n");
       if (actPlayer.loc.isBattle) return clickCmd(actPlayer.isAtk ? "Magic" : "Ward");
     } else if (event.key === "ArrowLeft") {
+      if (inputContext === "move") return moveStep("w");
       if (actPlayer.loc.isBattle) return clickCmd(actPlayer.isAtk ? "Strike" : "Counter");
     } else if (event.key === "ArrowRight") {
+      if (inputContext === "move") return moveStep("e");
       if (actPlayer.loc.isBattle) return clickCmd(actPlayer.isAtk ? "Attack" : "Defend");
     } else if (event.key === "ArrowDown") {
+      if (inputContext === "move") return moveStep("s");
       if (actPlayer.loc.isBattle) return clickCmd(actPlayer.isAtk ? "Skill" : "Give Up");
     }
   });

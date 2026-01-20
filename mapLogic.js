@@ -179,10 +179,35 @@ function setDist(p, dist) {
   p.dests.forEach(d => showDestination(d.node));
 }
 
-function movePlayer(p, dest) {
+function movePlayerToDest(p, dest) {
   p.loc = dest;
   p.dests.forEach(d => unshowDestination(d));
   movePlayerPiece(p);
   p.dests.length = 0;
   runArrival(p);
+}
+
+function moveStep(dir) {
+  const toNode = actPlayer.loc[dir];
+  if (!toNode) {
+    console.log(`${actPlayer.name} tried to step ${dir} but there is no path.`);
+    return;
+  }
+  // backtrack
+  if (toNode === actPlayer.curPath.at(-1)) {
+    p.loc = toNode;
+    movePlayerPiece(p);
+    actPlayer.curPath.pop();
+    return;
+  }
+  // arrive
+  if (actPlayer.curPath.length === actPlayer.moveRoll - 1) {
+    movePlayerToDest(actPlayer, toNode);
+    actPlayer.curPath.length = 0;
+    return;
+  }
+  // non-arrive step
+  p.loc = toNode;
+  actPlayer.curPath.push(toNode);
+  movePlayerPiece(p);
 }
