@@ -179,12 +179,9 @@ function setDist(p, dist) {
   p.dests.forEach(d => showDestination(d));
 }
 
-function movePlayerToDest(p, dest) {
-  p.loc = dest;
-  p.dests.forEach(d => unshowDestination(d));
-  movePlayerPiece(p);
-  p.dests.length = 0;
-  runArrival(p);
+// TODO: refactor this so caller calls autoPathMove
+function autoMovePlayerToDest(p, dest) {
+  ;
 }
 
 function moveStep(dir) {
@@ -192,23 +189,70 @@ function moveStep(dir) {
 
   if (!toNode) return;
 
+  actPlayer.loc = toNode;
+
   // backtrack
   if (toNode === actPlayer.curPath.at(-1)) {
-    p.loc = toNode;
-    movePlayerPiece(p);
+    movePlayerPiece(actPlayer);
     actPlayer.curPath.pop();
     return;
   }
 
   // arrive
   if (actPlayer.curPath.length === actPlayer.moveRoll - 1) {
-    movePlayerToDest(actPlayer, toNode);
+    // movePlayerToDest(actPlayer, toNode);
+    actPlayer.loc = toNode;
+    actPlayer.dests.forEach(d => unshowDestination(d));
+    movePlayerPiece(actPlayer);
+    runArrival(actPlayer);
+    actPlayer.dests.length = 0;
     actPlayer.curPath.length = 0;
+    actPlayer.autoPath = 0;
     return;
   }
 
   // intermediate step
-  p.loc = toNode;
+  actPlayer.loc = toNode;
   actPlayer.curPath.push(toNode);
   movePlayerPiece(p);
+}
+
+function autoPathMove(dirs) {
+  if (!Array.isArray(dirs) || dirs.length === 0) return;
+
+  // Make a defensive copy
+  const pathQueue = dirs.slice();
+  const el = actPlayer.el;
+
+  let active = true;
+
+  function stepNext() {
+    if (!active) return;
+
+    if (pathQueue.length === 0) {
+      cleanup();
+      return;
+    }
+
+    const dir = pathQueue.shift();
+    moveStep(dir);
+  }
+
+  function onTransitionEnd(e) {
+    // Only react to position transitions on the moving element itself
+    if (e.target !== el) return;
+    if (e.propertyName !== 'left' && e.propertyName !== 'top') return;
+
+    stepNext();
+  }
+
+  function cleanup() {
+    active = false;
+    el.removeEventListener('transitionend', onTransitionEnd);
+  }
+
+  el.addEventListener('transitionend', onTransitionEnd);
+
+  // Kick off the first step immediately
+  stepNext();
 }
