@@ -175,8 +175,8 @@ function runArrival(p) {
 
 function setDist(p, dist) {
   p.dist = dist;
-  p.dests = nodesAndPathsAtDist(p.loc, dist);
-  p.dests.forEach(d => showDestination(d.node));
+  p.dests = nodesAndPathsAtDist(p.loc, dist).map(x => x.dest);
+  p.dests.forEach(d => showDestination(d));
 }
 
 function movePlayerToDest(p, dest) {
@@ -189,10 +189,9 @@ function movePlayerToDest(p, dest) {
 
 function moveStep(dir) {
   const toNode = actPlayer.loc[dir];
-  if (!toNode) {
-    console.log(`${actPlayer.name} tried to step ${dir} but there is no path.`);
-    return;
-  }
+
+  if (!toNode) return;
+
   // backtrack
   if (toNode === actPlayer.curPath.at(-1)) {
     p.loc = toNode;
@@ -200,13 +199,15 @@ function moveStep(dir) {
     actPlayer.curPath.pop();
     return;
   }
+
   // arrive
   if (actPlayer.curPath.length === actPlayer.moveRoll - 1) {
     movePlayerToDest(actPlayer, toNode);
     actPlayer.curPath.length = 0;
     return;
   }
-  // non-arrive step
+
+  // intermediate step
   p.loc = toNode;
   actPlayer.curPath.push(toNode);
   movePlayerPiece(p);

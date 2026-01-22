@@ -116,6 +116,7 @@ function makePlayer(idx) {
   freeColors = freeColors.filter(c => c !== p.color);
   p.name = toUpper(p.color);
   p.isHuman = (p.id === 0);
+  p.curPath = [];
 
   makeFighterByClass(p);
 
@@ -133,6 +134,7 @@ function makePlayer(idx) {
   div.style.position = "absolute";
   div.style.zIndex = 104 - p.id;
   p.el = div;
+  p.el.style.transition = "left 300ms ease, top 300ms ease";
 
   movePlayerPiece(p);
   fieldEl.appendChild(div);
@@ -145,8 +147,8 @@ function movePlayerPiece(p) {
 }
 
 function showDestination(node) { 
-  // report("show");
-  // report(node);
+  // console.log("!!")
+  // console.log(node);
   node.el.style.border = "5px solid white"; 
   node.el.style.height = `${tilePx - 10}px`; 
   node.el.style.width = `${tilePx - 10}px`; 

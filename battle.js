@@ -1,11 +1,11 @@
 let IS_FULL_AUTO = false;
 // let CONSOLE_AWAIT_MODE = true;
 
-const readline = require('readline');
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
-});
+// const readline = require('readline');
+// const rl = readline.createInterface({
+//   input: process.stdin,
+//   output: process.stdout
+// });
 
 function getDamage(enac, targ) {
 	var dam = 1;
