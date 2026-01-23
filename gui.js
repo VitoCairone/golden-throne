@@ -30,7 +30,7 @@ function clickRoll() {
 
 function clickNode(node) {
   if (actPlayer.dests.includes(node)) {
-    movePlayerToDest(actPlayer, node);
+    autoMovePlayerToDest(actPlayer, node);
     advancePhase();
   }
   inputContext = null;

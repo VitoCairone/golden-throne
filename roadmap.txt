@@ -1,0 +1,297 @@
+OVERVIEW
+1. SCOPE AND DESIGN FOUNDATION
+2. SYSTEMS DECOMPOSITION AND DATA MODELING
+3. BACKEND INFRASTRUCTURE AND API SKELETON
+4. MAP AND BOARD ENGINE
+5. TURN ENGINE AND PHASE CONTROL
+6. CHARACTER STATS, ROLES, AND PROGRESSION
+7. ECONOMY AND SETTLEMENT SYSTEMS
+8. COMBAT SYSTEM
+9. EVENT AND TILE RESOLUTION SYSTEM
+10. ARTIFICIAL INTELLIGENCE PLAYERS
+11. FRONTEND GAMEPLAY CLIENT
+12. AI-GENERATED 2D ASSET PIPELINE
+13. AUDIO AND FEEDBACK SYSTEMS
+14. MULTIPLAYER, PERSISTENCE, AND RECOVERY
+15. BALANCING, TESTING, AND HARDENING
+16. DEPLOYMENT AND RELEASE
+
+
+1. SCOPE AND DESIGN FOUNDATION
+CUMULATIVE COMPLETION: 2%
+
+Define the game as an original turn-based board RPG with competitive progression.
+
+Establish original naming conventions, terminology, and fictional setting.
+
+Lock core gameplay loop:
+  Roll → Move → Resolve Tile → Combat or Event → End Phase
+
+Define victory conditions and match length.
+
+Decide which mechanics are included or excluded.
+
+Finalize technology stack:
+  Ruby on Rails (API-first backend)
+  PostgreSQL (persistent data)
+  Redis (turn state and locking)
+JavaScript frontend (Canvas or DOM-based)
+
+Define deterministic random number generation rules for replayability.
+
+2. SYSTEMS DECOMPOSITION AND DATA MODELING
+CUMULATIVE COMPLETION: 8%
+
+Identify authoritative systems:
+  Turn Engine
+  Map Graph
+  Player State
+  Economy
+  Combat
+  Artificial Intelligence
+  Event System
+
+Define persistent entities:
+  Players
+  Characters
+  Sessions
+  Maps
+  Nodes
+  Items
+  Abilities
+  Enemies
+  Settlements
+  Equipment
+  Turn Logs
+
+Establish immutable versus mutable state boundaries.
+
+Decide which logic is server-authoritative.
+
+3. BACKEND INFRASTRUCTURE AND API SKELETON
+CUMULATIVE COMPLETION: 16%
+
+Initialize Rails API project.
+
+Configure authentication and session management.
+
+Implement match lifecycle:
+  Create → Join → Start → End
+
+Create base controllers:
+  Sessions
+  Turns
+  Players
+
+Implement transactional turn resolution.
+
+Add full turn logging for replay and debugging.
+
+4. MAP AND BOARD ENGINE
+CUMULATIVE COMPLETION: 26%
+
+Represent the game board as a directed graph.
+
+Support node categories:
+  Settlement
+  Shop
+  Event
+  Enemy
+  Stronghold
+  Junction
+
+Implement movement rules:
+  Dice-based movement
+  Branch selection
+  Forced stops
+
+Support loops and one-way paths.
+
+Validate map integrity through automated tests.
+
+5. TURN ENGINE AND PHASE CONTROL
+CUMULATIVE COMPLETION: 36%
+
+Implement strict turn phases:
+  Roll Phase
+  Movement Phase
+  Resolution Phase
+  Interaction Phase
+  Cleanup Phase
+
+Enforce single active participant per turn.
+
+Apply turn locking and validation.
+
+Ensure AI and human players use identical execution paths.
+
+6. CHARACTER STATS, ROLES, AND PROGRESSION
+CUMULATIVE COMPLETION: 43%
+
+Implement character statistics:
+  Health
+  Attack
+  Defense
+  Magic
+  Speed
+
+Define playable roles and promotion paths.
+
+Implement level progression and stat growth curves.
+
+Apply role-based equipment and ability restrictions.
+
+Implement status conditions and temporary effects.
+
+7. ECONOMY AND SETTLEMENT SYSTEMS
+CUMULATIVE COMPLETION: 50%
+
+Implement settlement ownership mechanics.
+
+Settlement upgrades affecting income and defense.
+
+Gold generation and loss rules.
+
+Bankruptcy and recovery systems.
+
+Shop inventories and pricing logic.
+
+Settlement capture and liberation mechanics.
+
+8. COMBAT SYSTEM
+CUMULATIVE COMPLETION: 60%
+
+Turn-based combat engine.
+
+Initiative and action resolution.
+
+Damage formulas incorporating randomness and stats.
+
+Support player-versus-player and player-versus-enemy combat.
+
+Implement:
+  Critical hits
+  Misses
+  Counteractions
+
+Define outcomes and penalties for defeat.
+
+9. EVENT AND TILE RESOLUTION SYSTEM
+CUMULATIVE COMPLETION: 66%
+
+Data-driven event scripting system.
+
+Tile categories:
+  Fortune
+  Misfortune
+  Teleportation
+  Stat Modification
+  Forced Encounters
+
+Support conditional branching events.
+
+Ensure deterministic resolution with seeded randomness.
+
+10. ARTIFICIAL INTELLIGENCE PLAYERS
+CUMULATIVE COMPLETION: 74%
+
+Implement AI behavior layers:
+  Strategic planning
+  Tactical decision-making
+
+Movement heuristics:
+  Goal prioritization
+  Risk avoidance
+
+Combat decisions:
+  Ability usage
+  Retreat logic
+
+Multiple difficulty profiles.
+
+Anti-stalling safeguards.
+
+11. FRONTEND GAMEPLAY CLIENT
+CUMULATIVE COMPLETION: 82%
+
+Board rendering and animation.
+
+Player movement visualization.
+
+Interface components:
+  Dice
+  Menus
+  Combat UI
+
+Event dialogue and choice interfaces.
+
+Client mirrors server state without authority.
+
+12. AI-GENERATED 2D ASSET PIPELINE
+CUMULATIVE COMPLETION: 87%
+
+Establish visual style guidelines.
+
+Generate 2D assets:
+  Characters
+  Enemies
+  Board tiles
+
+Normalize resolution and color palettes.
+
+Create sprite atlases.
+
+Ensure stylistic consistency across assets.
+
+13. AUDIO AND FEEDBACK SYSTEMS
+CUMULATIVE COMPLETION: 90%
+
+Sound effects for:
+  Movement
+  Combat
+  Events
+
+Background music handling.
+
+Visual feedback:
+  Damage indicators
+  Status icons
+
+Accessibility options.
+
+14. MULTIPLAYER, PERSISTENCE, AND RECOVERY
+CUMULATIVE COMPLETION: 94%
+
+Local and online multiplayer support.
+
+Reconnection handling.
+
+Mid-session save and resume.
+
+Desynchronization recovery.
+
+15. BALANCING, TESTING, AND HARDENING
+CUMULATIVE COMPLETION: 98%
+
+Automated balance simulations.
+
+AI stress testing.
+
+Edge-case validation.
+
+Performance profiling.
+
+Exploit prevention.
+
+16. DEPLOYMENT AND RELEASE
+CUMULATIVE COMPLETION: 100%
+
+Production deployment configuration.
+
+Initial content seeding.
+
+Branding and naming finalization.
+
+Onboarding tutorial.
+
+Final quality assurance and release.
