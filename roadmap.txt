@@ -35,6 +35,7 @@ Finalize technology stack:
   Ruby on Rails (API-first backend)
   PostgreSQL (persistent data)
   Redis (turn state and locking)
+
 JavaScript frontend (Canvas or DOM-based)
 
 Define deterministic random number generation rules for replayability.
