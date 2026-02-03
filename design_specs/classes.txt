@@ -1,0 +1,23 @@
+CLASSES (12 for MVP -- 5 Magic, 5 Physical, 2 *)
+
+                    FIELD POWER                               SKILL1      SKILL2
+
+Cleric        M     Turn Start: Heal Chance                   Heal        Cure
+Enchanter     M *   Discount on all Gold purchases            Tame        Charm
+Mage *        M     Cast 2x Field Magic                       Meditate    Seal
+Monk          P     All Stats +50% when No Equipment          Disarm      Peace
+Ninja         P     Passing: Death Mark                       Shuriken    Vanish
+Thief *       P     Passing: Steal                            Steal       Escape
+Warrior *     P     Turn Start: AT+ Chance                    Fury        Poke
+Windrunner    P     Turn Start: Double Spinner Chance         Haste       Reflexes
+Summoner      M *   Turn Start: Free Item Chance              Conjure     Call
+Wizard        M     Can Heal or Teleport at Arcane Spaces     Focus       Arcana
+Spellsword    *     Chance to Reflect Field Magic             Pierce      Silence
+Hybrid        *     Set Field Power and Skills at Temples     Wildcard    Mirror
+
+VILLAIN CLASSES (4 for MVP -- 2 Magic, 2 Physical)
+
+Necromancer   M *   Reanimate slain enemies                   Decay     Undying
+Witch         M     Passing: Hex                              Hex       Transform
+Conqueror     P *   Owned Towns provide Tribute               ??        ??
+Murderer      P     Passing: Grudge                           Grudge    Kill

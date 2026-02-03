@@ -1,0 +1,14 @@
+All syntax for OSX (Mac)
+
+rails new gtbe --api -d postgresql
+cd gtbe
+[[ launch Postgres.app ]]
+rails db:create
+    Created database 'gtbe_development'
+    Created database 'gtbe_test'
+
+===== NOT YET RUN =====
+rails generate model Game status:string round:integer active_player_id:integer rng_seed:bigint
+rails generate model Location type:string i:integer j:integer zone:integer w:references e:references s:references n:references one_way_mask:integer
+rails generate model Player game:references name:string is_human:boolean color:string gold:integer location:references
+

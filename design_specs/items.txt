@@ -1,0 +1,11 @@
+<N> Crystal:    Set Roll to <N>
+Hearty Meal:    Heal 30% & MaxHP +1
+Powerbrew:      AT +50%
+Manabrew:       MG +50%
+Coffee:         SP +50%
+Monkey Paw:     All Spaces become Risk Spaces (3 uses)
+Rabbit Foot:    Loot or Arcane Space guarenteed Lucky
+Double Spinner  Two Move Spinners
+Triple Spinner  Three Move Spinners
+Snare Trap:     Set a trap that Snares
+Spike Trap:     Set a trap that deals damage and Slows

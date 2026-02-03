@@ -1,0 +1,463 @@
+PROJECT: TURN-BASED BOARD RPG
+DOCUMENT: systems.txt
+PURPOSE: Define authoritative system boundaries, data ownership, and invariants
+
+================================================================================
+GLOBAL RULES
+================================================================================
+
+- All authoritative game state lives on the server.
+- The client is a pure renderer and input collector.
+- All randomness is deterministic and seeded per game session.
+- AI and human players use identical execution paths.
+- No system may mutate data owned by another system.
+- Cross-system interaction occurs only via declared interfaces.
+- Every turn must be fully reconstructible from persistent state and turn logs.
+
+================================================================================
+SYSTEM: GAME SESSION
+================================================================================
+
+ROLE:
+- Owns the lifecycle of a game from initialization to finish.
+
+OWNS:
+- game.id
+- game.status (lobby | active | completed)
+- game.round
+- game.active_player_id
+- game.rng_seed
+
+DOES NOT OWN:
+- Player stats
+- Map structure
+- Combat resolution
+
+INVARIANTS:
+- Exactly one active player per turn.
+- Session status transitions are linear and irreversible.
+- RNG seed never changes after session start.
+
+INTERFACES:
+- Start session
+- Advance turn
+- End session
+
+AUTHORITATIVE: YES
+
+================================================================================
+SYSTEM: TURN ENGINE
+================================================================================
+
+ROLE:
+- Controls the progression and validation of turn phases.
+
+OWNS:
+- Turn phase state
+- Phase order
+- Turn locking
+
+TURN PHASES:
+
+1. Field Status Apply & Expire
+2. Turn Start (some Class field powers)
+3. Item or Field Magic (optional)
+4. Roll
+5. Move
+6. Event or Combat
+
+DOES NOT OWN:
+- Player data
+- Combat rules
+- Event definitions
+
+INVARIANTS:
+- Phases must execute in strict order.
+- Phases may be skipped in specific circumstances.
+- Only the active player may act during their turn,
+  except for Defence Choice from a defending player.
+
+INTERFACES:
+- Validate phase action
+- Commit phase result
+- Advance phase
+
+AUTHORITATIVE: YES
+
+================================================================================
+SYSTEM: MAP GRAPH
+================================================================================
+
+ROLE:
+- Defines board topology and legal movement.
+
+OWNS:
+- Maps
+- Nodes
+- Edges
+- Movement constraints
+
+NODE TYPES:
+- Encounter (most often Combat)
+- Loot
+- Shop [Item, Equipment, Magic]
+- Town
+- Temple
+- Castle
+- Arcane
+- Risk
+
+DOES NOT OWN:
+- Player positions
+- Tile effects
+
+INVARIANTS:
+- All nodes must be reachable.
+- No orphaned edges.
+- One-way edges must be respected by movement logic.
+
+INTERFACES:
+- Query reachable nodes
+- Validate movement
+- Enumerate paths
+
+AUTHORITATIVE: YES
+
+================================================================================
+SYSTEM: PLAYER STATE
+================================================================================
+
+ROLE:
+- Stores all persistent player-related data.
+
+OWNS:
+- Player identity
+- Current node position
+- Gold
+- Inventory
+- Equipment
+- Level and experience
+- Base stats
+- Current status effects
+
+DOES NOT OWN:
+- Map topology
+- Combat resolution
+- Event logic
+
+INVARIANTS:
+- Player position must reference a valid node.
+- Stats may not exceed defined caps.
+- Inventory capacity limits are enforced.
+
+INTERFACES:
+- Apply stat change
+- Add/remove item
+- Move position
+
+AUTHORITATIVE: YES
+
+================================================================================
+SYSTEM: JOBS AND PROGRESSION
+================================================================================
+
+JOB:
+- Defines character roles, advancement, and stat growth.
+
+OWNS:
+- Job definitions
+- Promotion paths
+- Growth curves
+- Job restrictions
+
+DOES NOT OWN:
+- Current player stats
+- Combat resolution
+
+INVARIANTS:
+- Promotion requirements must be met exactly.
+- Job restrictions are enforced at equip/use time.
+
+INTERFACES:
+- Query growth values
+- Validate promotion
+- Apply level-up bonuses
+
+AUTHORITATIVE: YES
+
+================================================================================
+SYSTEM: ECONOMY
+================================================================================
+
+ROLE:
+- Governs all currency flow and settlement value.
+
+OWNS:
+- Gold income rules
+- Gold loss rules
+- Settlement value
+- Bankruptcy rules
+
+DOES NOT OWN:
+- Settlement ownership
+- Player inventory
+
+INVARIANTS:
+- Gold values may not underflow.
+- Bankruptcy state must be recoverable.
+- Income calculations are deterministic.
+
+INTERFACES:
+- Apply income
+- Apply penalty
+- Evaluate bankruptcy
+
+AUTHORITATIVE: YES
+
+================================================================================
+SYSTEM: SETTLEMENTS
+================================================================================
+
+ROLE:
+- Controls ownership and upgrading of settlements.
+- Settlements are defined as Towns and Castles
+- Settlements may confer bonuses on nearby Shops and Temples
+- A Shop or Temple is owned by at most one Settlement
+
+OWNS:
+- Settlement ownership
+- Upgrade level
+- Defense value
+
+DOES NOT OWN:
+- Economy formulas
+- Player stats
+
+INVARIANTS:
+- A settlement has at most one owner.
+- Upgrade levels are capped.
+- Defense scales only via upgrades.
+
+INTERFACES:
+- Capture settlement
+- Upgrade settlement
+- Query settlement value
+
+AUTHORITATIVE: YES
+
+================================================================================
+SYSTEM: SHOP
+================================================================================
+
+ROLE:
+- Handles item availability and purchasing.
+
+OWNS:
+- Shop inventory
+- Pricing rules
+- Purchase validation
+
+DOES NOT OWN:
+- Item definitions
+- Player gold totals
+
+INVARIANTS:
+- Items cannot be sold if unavailable.
+- Pricing is deterministic.
+- Inventory refresh rules are fixed.
+
+INTERFACES:
+- List items
+- Validate purchase
+- Execute purchase
+
+AUTHORITATIVE: YES
+
+================================================================================
+SYSTEM: COMBAT
+================================================================================
+
+ROLE:
+- Resolves all battles.
+
+OWNS:
+- Combat flow
+- Damage calculation
+- Hit/miss resolution
+- Critical logic
+
+DOES NOT OWN:
+- Player stats storage
+- Ability definitions
+
+INVARIANTS:
+- Combat outcome is fully deterministic given state + RNG seed.
+- Combat has exactly one winner.
+- Defeat consequences are enforced.
+
+INTERFACES:
+- Initiate combat
+- Resolve round
+- Finalize result
+
+AUTHORITATIVE: YES
+
+================================================================================
+SYSTEM: ABILITIES AND ITEMS
+================================================================================
+
+ROLE:
+- Defines reusable effects applied by items and abilities.
+
+OWNS:
+- Effect definitions
+- Targeting rules
+- Usage conditions
+
+DOES NOT OWN:
+- Combat timing
+- Player inventory
+
+INVARIANTS:
+- Effects must declare scope and duration.
+- Usage restrictions are enforced server-side.
+
+INTERFACES:
+- Validate usage
+- Apply effect
+- Expire effect
+
+AUTHORITATIVE: YES
+
+================================================================================
+SYSTEM: STATUS EFFECTS
+================================================================================
+
+ROLE:
+- Applies temporary modifiers to player state.
+
+OWNS:
+- Effect duration
+- Effect stacking rules
+
+DOES NOT OWN:
+- Base stats
+- Combat rules
+
+INVARIANTS:
+- Effects expire deterministically.
+- Stacking rules are explicit.
+
+INTERFACES:
+- Apply status
+- Tick duration
+- Remove status
+
+AUTHORITATIVE: YES
+
+================================================================================
+SYSTEM: ENCOUNTER ENGINE
+================================================================================
+
+ROLE:
+- Resolves scripted, non-combat interactions.
+
+OWNS:
+- Encounter definitions
+- Branching logic
+- Encounter outcomes
+
+DOES NOT OWN:
+- Player stats directly
+- Economy formulas
+
+INVARIANTS:
+- Encounters resolve exactly once per trigger.
+- Encounter conditions are deterministic.
+
+INTERFACES:
+- Trigger encounter
+- Resolve choice
+- Apply outcome
+
+AUTHORITATIVE: YES
+
+================================================================================
+SYSTEM: ARTIFICIAL INTELLIGENCE
+================================================================================
+
+ROLE:
+- Selects actions for non-human players.
+
+OWNS:
+- Decision heuristics
+- Difficulty profiles
+
+DOES NOT OWN:
+- Game state
+- Outcomes
+- RNG
+
+INVARIANTS:
+- AI may only request legal actions.
+- AI never bypasses validation.
+
+INTERFACES:
+- Select action
+- Evaluate options
+
+AUTHORITATIVE: NO
+
+================================================================================
+SYSTEM: TURN LOGGING AND REPLAY
+================================================================================
+
+ROLE:
+- Records and reconstructs gameplay.
+
+OWNS:
+- Turn logs
+- Action history
+
+DOES NOT OWN:
+- Live game state
+
+INVARIANTS:
+- Logs are append-only.
+- Replays must match live outcomes exactly.
+
+INTERFACES:
+- Record action
+- Reconstruct state
+
+AUTHORITATIVE: YES
+
+================================================================================
+SYSTEM: CLIENT PRESENTATION
+================================================================================
+
+ROLE:
+- Renders state and collects input.
+
+OWNS:
+- UI state
+- Animations
+
+DOES NOT OWN:
+- Game logic
+- Validation
+- RNG
+
+INVARIANTS:
+- Client never assumes authority.
+- Client state mirrors server state only.
+
+INTERFACES:
+- Send input
+- Render state
+
+AUTHORITATIVE: NO
+
+================================================================================
+END OF DOCUMENT
+================================================================================

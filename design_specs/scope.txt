@@ -1,0 +1,23 @@
+There will be SEVEN provinces including the starting province.
+
+The Story Mode should be around 90 minutes to clear each area,
+ergo around 11 hours to complete Story Mode.
+
+There should be an option for a Quick Match which lasts about 1 hour.
+
+When the Villain is defeated, the player with the most Heroics is the Winner.
+
+Heroics are earned mainly for rescuing Towns, and also for completing Missions.
+
+The stack for the project is
+  Ruby on Rails (API-first backend)
+  PostgreSQL (persistent data)
+  Redis (turn state and locking)
+  JavaScript frontend (DOM-based MVP)
+
+STATS
+  AT (Attack)
+  DF (Defence)
+  MG (Magic)
+  SP (Speed)
+  TO (Toughness)
